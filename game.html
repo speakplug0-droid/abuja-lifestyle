@@ -2,14 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>AbujaLifestyle</title>
 
 <style>
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
 html,body{
   margin:0;
@@ -17,7 +14,6 @@ html,body{
   height:100%;
   overflow:hidden;
   font-family:Arial,sans-serif;
-  background:#78c9ff;
 }
 
 #game{
@@ -25,60 +21,48 @@ html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:linear-gradient(#72c8ff 0 52%,#70b85d 52% 100%);
+  background:linear-gradient(#62c5ff 0 50%,#68ad55 50%);
 }
 
-/* SUN */
+/* SKY */
 .sun{
   position:absolute;
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  background:#ffd84d;
+  width:65px;
+  height:65px;
+  right:35px;
   top:45px;
-  right:45px;
-  box-shadow:0 0 35px #ffd84d;
+  border-radius:50%;
+  background:#ffd83d;
+  box-shadow:0 0 35px #ffe77a;
 }
 
-/* CLOUDS */
 .cloud{
   position:absolute;
-  width:120px;
-  height:35px;
+  width:110px;
+  height:30px;
   border-radius:30px;
   background:white;
   opacity:.8;
 }
-
-.cloud:before,
-.cloud:after{
+.cloud:before,.cloud:after{
   content:"";
   position:absolute;
   background:white;
   border-radius:50%;
 }
-
 .cloud:before{
-  width:55px;
-  height:55px;
-  left:18px;
-  top:-28px;
+  width:50px;height:50px;left:15px;top:-25px;
 }
-
 .cloud:after{
-  width:65px;
-  height:65px;
-  right:15px;
-  top:-35px;
+  width:58px;height:58px;right:12px;top:-30px;
 }
+.cloud1{left:35px;top:85px}
+.cloud2{left:55%;top:135px;transform:scale(.7)}
 
-.cloud1{top:90px;left:40px}
-.cloud2{top:150px;left:55%;transform:scale(.7)}
-
-/* CITY */
+/* BUILDINGS */
 .city{
   position:absolute;
-  bottom:48%;
+  bottom:50%;
   left:0;
   width:100%;
   height:170px;
@@ -87,8 +71,8 @@ html,body{
 .building{
   position:absolute;
   bottom:0;
-  background:linear-gradient(90deg,#c9c9c9,#f1f1f1,#bdbdbd);
   border:2px solid #777;
+  background:linear-gradient(90deg,#bfc1c3,#eeeeee,#b7b9bb);
 }
 
 .building:after{
@@ -96,152 +80,144 @@ html,body{
   position:absolute;
   inset:12px;
   background:
-    repeating-linear-gradient(
-      90deg,
-      #315c78 0 18px,
-      transparent 18px 30px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 20px,
-      #315c78 20px 28px
-    );
+    repeating-linear-gradient(90deg,#28536d 0 15px,transparent 15px 27px),
+    repeating-linear-gradient(0deg,transparent 0 19px,#28536d 19px 27px);
 }
 
-.b1{left:3%;width:90px;height:105px}
-.b2{left:17%;width:120px;height:145px}
-.b3{left:36%;width:100px;height:120px}
-.b4{right:19%;width:130px;height:155px}
-.b5{right:2%;width:95px;height:115px}
+.b1{left:2%;width:85px;height:100px}
+.b2{left:16%;width:115px;height:145px}
+.b3{left:35%;width:95px;height:115px}
+.b4{right:18%;width:125px;height:155px}
+.b5{right:1%;width:90px;height:110px}
 
 /* ROAD */
-.road{
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:100%;
-  height:45%;
-  background:#35383c;
-  border-top:8px solid #777;
-}
-
-.road:before{
-  content:"";
-  position:absolute;
-  top:50%;
-  left:0;
-  width:100%;
-  height:8px;
-  background:repeating-linear-gradient(
-    90deg,
-    #fff 0 55px,
-    transparent 55px 105px
-  );
-}
-
-/* SIDEWALK */
 .sidewalk{
   position:absolute;
   left:0;
   bottom:42%;
   width:100%;
-  height:32px;
-  background:#bdbdbd;
+  height:30px;
+  background:#b9b9b9;
   border-top:3px solid #888;
   border-bottom:3px solid #888;
+}
+
+.road{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:43%;
+  background:#303338;
+  border-top:7px solid #777;
+}
+
+.road:after{
+  content:"";
+  position:absolute;
+  top:50%;
+  left:0;
+  width:100%;
+  height:7px;
+  background:repeating-linear-gradient(
+    90deg,
+    white 0 55px,
+    transparent 55px 105px
+  );
 }
 
 /* HUD */
 .hud{
   position:absolute;
-  top:15px;
-  left:15px;
-  right:15px;
+  z-index:50;
+  top:14px;
+  left:14px;
+  right:14px;
   display:flex;
   justify-content:space-between;
-  z-index:30;
 }
 
 .hudBox{
-  background:rgba(0,0,0,.65);
-  color:white;
   padding:10px 14px;
   border-radius:12px;
+  background:rgba(0,0,0,.7);
+  color:white;
   font-weight:bold;
-  font-size:14px;
 }
 
-/* PLAYER */
+#status{
+  position:absolute;
+  z-index:50;
+  top:64px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.7);
+  color:white;
+  padding:9px 14px;
+  border-radius:20px;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+/* HUMAN */
 #player{
   position:absolute;
   width:52px;
-  height:100px;
-  z-index:15;
-  transition:transform .05s linear;
+  height:102px;
+  z-index:20;
 }
 
-.player-shadow{
+.playerShadow{
   position:absolute;
   width:48px;
   height:12px;
+  bottom:-2px;
   left:2px;
-  bottom:-3px;
   border-radius:50%;
-  background:rgba(0,0,0,.35);
+  background:rgba(0,0,0,.4);
 }
 
 .head{
   position:absolute;
-  width:32px;
-  height:34px;
-  left:10px;
-  top:3px;
-  border-radius:48% 48% 45% 45%;
-  background:#9a5a35;
-  border:2px solid #62351f;
+  width:34px;
+  height:35px;
+  left:9px;
+  top:2px;
+  border-radius:48%;
+  background:#985a37;
+  border:2px solid #60351f;
 }
 
 .hair{
   position:absolute;
-  width:34px;
-  height:15px;
-  left:9px;
+  width:35px;
+  height:16px;
+  left:8px;
   top:0;
   border-radius:18px 18px 5px 5px;
-  background:#161616;
+  background:#151515;
 }
 
 .eye{
   position:absolute;
   width:4px;
   height:4px;
+  top:19px;
   border-radius:50%;
   background:#111;
-  top:19px;
 }
-
-.eye.left{left:17px}
-.eye.right{left:27px}
+.eye1{left:17px}
+.eye2{left:28px}
 
 .body{
   position:absolute;
-  width:38px;
-  height:43px;
-  left:7px;
+  width:39px;
+  height:44px;
+  left:6px;
   top:36px;
-  border-radius:9px 9px 5px 5px;
-  background:linear-gradient(#202b38,#101820);
-  border:2px solid #090d12;
-}
-
-.shirt{
-  position:absolute;
-  width:25px;
-  height:5px;
-  left:14px;
-  top:42px;
-  background:#e6e6e6;
-  border-radius:5px;
+  border-radius:9px;
+  background:linear-gradient(#273746,#101820);
+  border:2px solid #080c10;
 }
 
 .arm{
@@ -250,242 +226,223 @@ html,body{
   height:39px;
   top:39px;
   border-radius:8px;
-  background:#925331;
-  border:2px solid #62351f;
+  background:#925431;
 }
-
-.arm.left{left:1px;transform:rotate(7deg)}
-.arm.right{right:1px;transform:rotate(-7deg)}
+.arm1{left:0;transform:rotate(8deg)}
+.arm2{right:0;transform:rotate(-8deg)}
 
 .leg{
   position:absolute;
   width:13px;
-  height:32px;
-  top:77px;
-  border-radius:5px;
+  height:33px;
+  top:78px;
   background:#20242a;
+  border-radius:5px;
 }
-
-.leg.left{left:10px}
-.leg.right{right:10px}
+.leg1{left:10px}
+.leg2{right:10px}
 
 .shoe{
   position:absolute;
-  width:19px;
+  width:20px;
   height:9px;
-  background:#111;
-  border-radius:8px 4px 4px 8px;
   top:96px;
+  border-radius:8px;
+  background:#090909;
 }
-
-.shoe.left{left:4px}
-.shoe.right{right:4px}
+.shoe1{left:3px}
+.shoe2{right:3px}
 
 /* VELAR */
 #car{
   position:absolute;
-  width:170px;
-  height:76px;
-  z-index:14;
+  width:190px;
+  height:88px;
+  z-index:19;
 }
 
-.car-shadow{
+.carShadow{
   position:absolute;
-  width:150px;
-  height:18px;
+  width:170px;
+  height:17px;
   left:10px;
   bottom:0;
-  background:rgba(0,0,0,.45);
   border-radius:50%;
+  background:rgba(0,0,0,.5);
 }
 
-.car-body{
+.carBody{
   position:absolute;
-  width:165px;
-  height:48px;
   left:2px;
-  bottom:13px;
-  border-radius:17px 22px 10px 10px;
-  background:linear-gradient(
-    180deg,
-    #3b4148 0%,
-    #15191d 38%,
-    #080a0c 100%
-  );
+  bottom:14px;
+  width:185px;
+  height:51px;
+  border-radius:13px 25px 9px 9px;
+  background:
+    linear-gradient(#454b51,#171b1f 45%,#07090a);
   border:2px solid #050607;
-  box-shadow:
-    inset 0 5px 5px rgba(255,255,255,.12),
-    0 5px 8px rgba(0,0,0,.35);
+  box-shadow:inset 0 5px 7px rgba(255,255,255,.14);
 }
 
+/* ROOF */
 .roof{
   position:absolute;
-  width:105px;
-  height:35px;
-  left:30px;
-  top:-25px;
-  border-radius:42px 48px 5px 5px;
-  background:#15191d;
+  left:34px;
+  top:-29px;
+  width:112px;
+  height:34px;
+  border-radius:45px 52px 5px 5px;
+  background:#151a1e;
   border:2px solid #050607;
 }
 
-.window{
+.windshield{
   position:absolute;
-  top:4px;
+  left:54px;
+  top:3px;
+  width:50px;
   height:25px;
-  background:linear-gradient(135deg,#38546a,#101820);
-  border:1px solid #536b7b;
+  transform:skewX(-12deg);
+  border-radius:5px;
+  background:linear-gradient(135deg,#49687d,#111a21);
+  border:1px solid #718696;
 }
 
-.window.front{
-  width:43px;
-  left:55px;
-  clip-path:polygon(15% 0,100% 0,88% 100%,0 100%);
-}
-
-.window.back{
-  width:34px;
+.sideWindow{
+  position:absolute;
   left:12px;
-  clip-path:polygon(0 0,100% 0,100% 100%,10% 100%);
+  top:4px;
+  width:38px;
+  height:24px;
+  border-radius:4px;
+  background:linear-gradient(135deg,#49687d,#111a21);
+  border:1px solid #718696;
+}
+
+/* FRONT */
+.front{
+  position:absolute;
+  right:-2px;
+  top:16px;
+  width:30px;
+  height:22px;
+  border-radius:4px 8px 8px 4px;
+  background:#0b0d0f;
+  border:2px solid #555;
 }
 
 .grille{
   position:absolute;
-  right:-2px;
-  top:17px;
-  width:26px;
-  height:18px;
+  right:2px;
+  top:20px;
+  width:22px;
+  height:16px;
   border-radius:3px;
+  border:2px solid #888;
   background:repeating-linear-gradient(
     0deg,
-    #9fa5aa 0 2px,
+    #aaa 0 2px,
     #222 2px 4px
   );
-  border:2px solid #777;
 }
 
-.headlight{
+.light{
   position:absolute;
-  right:25px;
-  top:9px;
-  width:23px;
+  right:27px;
+  top:12px;
+  width:30px;
   height:8px;
-  background:#eaf8ff;
   border-radius:8px;
-  box-shadow:0 0 10px #dff8ff;
-  transform:skewX(-20deg);
+  background:#f4fbff;
+  box-shadow:0 0 12px #fff;
+  transform:skewX(-18deg);
 }
 
-.headlight2{
+.lightBack{
   position:absolute;
-  left:8px;
-  top:9px;
-  width:20px;
-  height:8px;
-  background:#eaf8ff;
-  border-radius:8px;
-  box-shadow:0 0 10px #dff8ff;
-  transform:skewX(20deg);
+  left:4px;
+  top:13px;
+  width:15px;
+  height:9px;
+  border-radius:4px;
+  background:#e00000;
+  box-shadow:0 0 7px #ff2222;
 }
 
 .handle{
   position:absolute;
-  width:11px;
-  height:3px;
-  background:#aaa;
+  left:106px;
   top:19px;
-  left:95px;
-  border-radius:3px;
+  width:12px;
+  height:3px;
+  border-radius:4px;
+  background:#aaa;
 }
 
+/* WHEELS */
 .wheel{
   position:absolute;
-  width:30px;
-  height:30px;
-  bottom:-8px;
+  bottom:-9px;
+  width:34px;
+  height:34px;
   border-radius:50%;
-  background:#080808;
+  background:#070707;
   border:4px solid #25282b;
-  box-shadow:inset 0 0 0 4px #111;
+  box-shadow:inset 0 0 0 5px #101010;
 }
 
 .wheel:after{
   content:"";
   position:absolute;
-  width:10px;
-  height:10px;
-  left:6px;
-  top:6px;
+  width:11px;
+  height:11px;
+  left:7px;
+  top:7px;
   border-radius:50%;
   background:#aaa;
   border:2px solid #444;
 }
 
-.wheel.left{left:18px}
-.wheel.right{right:18px}
-
-.tail{
-  position:absolute;
-  left:0;
-  top:14px;
-  width:12px;
-  height:9px;
-  background:#d60000;
-  border-radius:3px;
-}
+.wheel1{left:20px}
+.wheel2{right:20px}
 
 /* CONTROLS */
 #joystick{
   position:absolute;
-  bottom:25px;
-  left:25px;
-  width:105px;
-  height:105px;
+  z-index:100;
+  left:22px;
+  bottom:22px;
+  width:108px;
+  height:108px;
   border-radius:50%;
   background:rgba(255,255,255,.18);
-  border:2px solid rgba(255,255,255,.4);
-  z-index:50;
+  border:2px solid rgba(255,255,255,.45);
 }
 
 #stick{
   position:absolute;
   width:52px;
   height:52px;
-  left:24px;
-  top:24px;
+  left:26px;
+  top:26px;
   border-radius:50%;
-  background:rgba(255,255,255,.65);
-  box-shadow:0 3px 10px rgba(0,0,0,.3);
+  background:rgba(255,255,255,.7);
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
 }
 
 #action{
   position:absolute;
-  bottom:35px;
-  right:28px;
-  width:90px;
-  height:90px;
-  border:0;
+  z-index:100;
+  right:25px;
+  bottom:30px;
+  width:92px;
+  height:92px;
   border-radius:50%;
-  background:rgba(15,15,15,.8);
+  border:3px solid rgba(255,255,255,.55);
+  background:rgba(10,10,10,.82);
   color:white;
   font-weight:bold;
   font-size:15px;
-  border:3px solid rgba(255,255,255,.5);
-  z-index:50;
-}
-
-#status{
-  position:absolute;
-  top:68px;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,.65);
-  color:white;
-  padding:9px 15px;
-  border-radius:20px;
-  font-size:13px;
-  z-index:30;
-  white-space:nowrap;
 }
 </style>
 </head>
@@ -494,154 +451,163 @@ html,body{
 
 <div id="game">
 
-  <div class="sun"></div>
-  <div class="cloud cloud1"></div>
-  <div class="cloud cloud2"></div>
+<div class="sun"></div>
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
 
-  <div class="city">
-    <div class="building b1"></div>
-    <div class="building b2"></div>
-    <div class="building b3"></div>
-    <div class="building b4"></div>
-    <div class="building b5"></div>
+<div class="city">
+  <div class="building b1"></div>
+  <div class="building b2"></div>
+  <div class="building b3"></div>
+  <div class="building b4"></div>
+  <div class="building b5"></div>
+</div>
+
+<div class="sidewalk"></div>
+<div class="road"></div>
+
+<div class="hud">
+  <div class="hudBox">🇳🇬 ABUJA</div>
+  <div class="hudBox">💰 ₦25,000</div>
+</div>
+
+<div id="status">Walk to the Velar and press ACTION</div>
+
+<!-- PLAYER -->
+<div id="player" style="left:35%;top:64%;">
+  <div class="playerShadow"></div>
+  <div class="head">
+    <div class="eye eye1"></div>
+    <div class="eye eye2"></div>
   </div>
+  <div class="hair"></div>
+  <div class="body"></div>
+  <div class="arm arm1"></div>
+  <div class="arm arm2"></div>
+  <div class="leg leg1"></div>
+  <div class="leg leg2"></div>
+  <div class="shoe shoe1"></div>
+  <div class="shoe shoe2"></div>
+</div>
 
-  <div class="sidewalk"></div>
-  <div class="road"></div>
+<!-- RANGE ROVER VELAR STYLE -->
+<div id="car" style="left:57%;top:65%;">
+  <div class="carShadow"></div>
 
-  <div class="hud">
-    <div class="hudBox">🇳🇬 ABUJA</div>
-    <div class="hudBox">💰 ₦25,000</div>
-  </div>
+  <div class="carBody">
 
-  <div id="status">Walk to the Velar and press ACTION</div>
-
-  <!-- PLAYER -->
-  <div id="player" style="left:35%;top:65%;">
-    <div class="player-shadow"></div>
-    <div class="head">
-      <div class="eye left"></div>
-      <div class="eye right"></div>
+    <div class="roof">
+      <div class="sideWindow"></div>
+      <div class="windshield"></div>
     </div>
-    <div class="hair"></div>
-    <div class="body"></div>
-    <div class="shirt"></div>
-    <div class="arm left"></div>
-    <div class="arm right"></div>
-    <div class="leg left"></div>
-    <div class="leg right"></div>
-    <div class="shoe left"></div>
-    <div class="shoe right"></div>
+
+    <div class="light"></div>
+    <div class="lightBack"></div>
+    <div class="front"></div>
+    <div class="grille"></div>
+    <div class="handle"></div>
+
+    <div class="wheel wheel1"></div>
+    <div class="wheel wheel2"></div>
+
   </div>
+</div>
 
-  <!-- RANGE ROVER VELAR STYLE -->
-  <div id="car" style="left:58%;top:67%;">
-    <div class="car-shadow"></div>
+<div id="joystick">
+  <div id="stick"></div>
+</div>
 
-    <div class="car-body">
-      <div class="roof">
-        <div class="window back"></div>
-        <div class="window front"></div>
-      </div>
-
-      <div class="tail"></div>
-      <div class="headlight"></div>
-      <div class="headlight2"></div>
-      <div class="grille"></div>
-      <div class="handle"></div>
-
-      <div class="wheel left"></div>
-      <div class="wheel right"></div>
-    </div>
-  </div>
-
-  <div id="joystick">
-    <div id="stick"></div>
-  </div>
-
-  <button id="action">ACTION</button>
+<button id="action">ACTION</button>
 
 </div>
 
 <script>
-const player = document.getElementById("player");
-const car = document.getElementById("car");
-const stick = document.getElementById("stick");
-const joystick = document.getElementById("joystick");
-const action = document.getElementById("action");
-const statusText = document.getElementById("status");
+const player=document.getElementById("player");
+const car=document.getElementById("car");
+const joystick=document.getElementById("joystick");
+const stick=document.getElementById("stick");
+const action=document.getElementById("action");
+const statusText=document.getElementById("status");
 
-let playerX = 35;
-let playerY = 65;
+let playerX=35;
+let playerY=64;
 
-let carX = 58;
-let carY = 67;
+let carX=57;
+let carY=65;
 
-let driving = false;
-let moveX = 0;
-let moveY = 0;
+let driving=false;
 
-function updatePositions(){
+let moveX=0;
+let moveY=0;
+
+function update(){
+
   if(driving){
-    carX += moveX * 0.12;
-    carY += moveY * 0.10;
 
-    carX = Math.max(2,Math.min(82,carX));
-    carY = Math.max(48,Math.min(84,carY));
+    /* CAR = MUCH FASTER */
+    carX += moveX * 0.32;
+    carY += moveY * 0.26;
 
-    car.style.left = carX + "%";
-    car.style.top = carY + "%";
+    carX=Math.max(1,Math.min(82,carX));
+    carY=Math.max(48,Math.min(83,carY));
+
+    car.style.left=carX+"%";
+    car.style.top=carY+"%";
+
   }else{
+
+    /* HUMAN = SLOWER */
     playerX += moveX * 0.10;
-    playerY += moveY * 0.10;
+    playerY += moveY * 0.08;
 
-    playerX = Math.max(2,Math.min(94,playerX));
-    playerY = Math.max(48,Math.min(84,playerY));
+    playerX=Math.max(1,Math.min(94,playerX));
+    playerY=Math.max(48,Math.min(84,playerY));
 
-    player.style.left = playerX + "%";
-    player.style.top = playerY + "%";
+    player.style.left=playerX+"%";
+    player.style.top=playerY+"%";
   }
 }
 
-setInterval(updatePositions,30);
+setInterval(update,30);
 
 /* JOYSTICK */
-let touching = false;
+let active=false;
 
-function joystickMove(clientX,clientY){
-  const rect = joystick.getBoundingClientRect();
+function moveStick(x,y){
 
-  let dx = clientX - (rect.left + rect.width/2);
-  let dy = clientY - (rect.top + rect.height/2);
+  const r=joystick.getBoundingClientRect();
 
-  const distance = Math.sqrt(dx*dx + dy*dy);
-  const max = 27;
+  let dx=x-(r.left+r.width/2);
+  let dy=y-(r.top+r.height/2);
 
-  if(distance > max){
-    dx = dx / distance * max;
-    dy = dy / distance * max;
+  const distance=Math.sqrt(dx*dx+dy*dy);
+  const max=27;
+
+  if(distance>max){
+    dx=dx/distance*max;
+    dy=dy/distance*max;
   }
 
-  stick.style.transform = `translate(${dx}px,${dy}px)`;
+  stick.style.transform=`translate(${dx}px,${dy}px)`;
 
-  moveX = dx / max;
-  moveY = dy / max;
+  moveX=dx/max;
+  moveY=dy/max;
 }
 
 joystick.addEventListener("touchstart",e=>{
-  touching=true;
+  active=true;
   const t=e.touches[0];
-  joystickMove(t.clientX,t.clientY);
+  moveStick(t.clientX,t.clientY);
 });
 
 joystick.addEventListener("touchmove",e=>{
-  if(!touching)return;
+  if(!active)return;
   const t=e.touches[0];
-  joystickMove(t.clientX,t.clientY);
+  moveStick(t.clientX,t.clientY);
 });
 
 joystick.addEventListener("touchend",()=>{
-  touching=false;
+  active=false;
   moveX=0;
   moveY=0;
   stick.style.transform="translate(0,0)";
@@ -649,18 +615,23 @@ joystick.addEventListener("touchend",()=>{
 
 /* ACTION */
 action.addEventListener("click",()=>{
+
   if(!driving){
+
     driving=true;
     player.style.display="none";
     statusText.textContent="🚙 Driving the Velar";
+
   }else{
+
     driving=false;
 
-    playerX=carX+9;
+    playerX=carX+8;
     playerY=carY+2;
 
     player.style.left=playerX+"%";
     player.style.top=playerY+"%";
+
     player.style.display="block";
 
     statusText.textContent="Walk to the Velar and press ACTION";
