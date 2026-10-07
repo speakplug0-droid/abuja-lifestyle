@@ -446,9 +446,6 @@ const interior=new THREE.Group();
 interior.visible=false;
 scene.add(interior);
 
-
-/* HOUSE EXTERIOR */
-
 const driveway=new THREE.Mesh(
   new THREE.BoxGeometry(9,.12,15),
   mat(0x777777)
@@ -459,7 +456,6 @@ driveway.position.set(
 );
 
 exterior.add(driveway);
-
 
 const houseBody=new THREE.Mesh(
   new THREE.BoxGeometry(18,7,14),
@@ -474,7 +470,6 @@ houseBody.castShadow=true;
 
 exterior.add(houseBody);
 
-
 const roof=new THREE.Mesh(
   new THREE.ConeGeometry(13,5,4),
   mat(0x873a2e)
@@ -487,9 +482,6 @@ roof.position.set(
 roof.rotation.y=Math.PI/4;
 
 exterior.add(roof);
-
-
-/* DOOR */
 
 const doorZ=house.z-7.1;
 
@@ -504,9 +496,6 @@ door.position.set(
 
 exterior.add(door);
 
-
-/* WINDOWS */
-
 function houseWindow(x){
 
   const w=new THREE.Mesh(
@@ -520,9 +509,6 @@ function houseWindow(x){
 
 houseWindow(48);
 houseWindow(62);
-
-
-/* COMPOUND */
 
 function wall(x,y,z,w,h,d){
 
@@ -541,9 +527,6 @@ wall(house.x+14,1,house.z,.4,2,28);
 
 wall(house.x-10,1,house.z-14,8,2,.4);
 wall(house.x+10,1,house.z-14,8,2,.4);
-
-
-/* GATE */
 
 function gatePost(x){
 
@@ -574,7 +557,6 @@ floor.position.set(
 );
 
 interior.add(floor);
-
 
 function insideWall(x,y,z,w,h,d,color){
 
@@ -616,9 +598,6 @@ insideWall(
   house.x,5.8,house.z-6.5,
   7,2.4,.3,0xe7d5b8
 );
-
-
-/* CEILING */
 
 const ceiling=new THREE.Mesh(
   new THREE.BoxGeometry(18,.2,14),
@@ -698,9 +677,7 @@ interior.add(houseLight);
 ===================================================== */
 
 const player=new THREE.Group();
-
 player.visible=false;
-
 scene.add(player);
 
 const legMaterial=mat(0x20252b);
@@ -788,11 +765,7 @@ part(
    CAR
 ===================================================== */
 
-const car=new Car(
-  scene,
-  0,
-  40
-);
+const car=new Car(scene,0,40);
 
 
 /* =====================================================
@@ -876,34 +849,20 @@ bindButton("right","d");
 window.addEventListener(
   "keydown",
   e=>{
-    if(e.key==="w"||e.key==="ArrowUp")
-      keys.w=true;
-
-    if(e.key==="s"||e.key==="ArrowDown")
-      keys.s=true;
-
-    if(e.key==="a"||e.key==="ArrowLeft")
-      keys.a=true;
-
-    if(e.key==="d"||e.key==="ArrowRight")
-      keys.d=true;
+    if(e.key==="w"||e.key==="ArrowUp")keys.w=true;
+    if(e.key==="s"||e.key==="ArrowDown")keys.s=true;
+    if(e.key==="a"||e.key==="ArrowLeft")keys.a=true;
+    if(e.key==="d"||e.key==="ArrowRight")keys.d=true;
   }
 );
 
 window.addEventListener(
   "keyup",
   e=>{
-    if(e.key==="w"||e.key==="ArrowUp")
-      keys.w=false;
-
-    if(e.key==="s"||e.key==="ArrowDown")
-      keys.s=false;
-
-    if(e.key==="a"||e.key==="ArrowLeft")
-      keys.a=false;
-
-    if(e.key==="d"||e.key==="ArrowRight")
-      keys.d=false;
+    if(e.key==="w"||e.key==="ArrowUp")keys.w=false;
+    if(e.key==="s"||e.key==="ArrowDown")keys.s=false;
+    if(e.key==="a"||e.key==="ArrowLeft")keys.a=false;
+    if(e.key==="d"||e.key==="ArrowRight")keys.d=false;
   }
 );
 
@@ -925,7 +884,6 @@ canvas.addEventListener(
     if(e.touches.length!==1)return;
 
     touching=true;
-
     lastX=e.touches[0].clientX;
     lastY=e.touches[0].clientY;
   },
@@ -943,10 +901,7 @@ canvas.addEventListener(
     orbit-=(x-lastX)*.006;
     pitch-=(y-lastY)*.004;
 
-    pitch=Math.max(
-      .15,
-      Math.min(1.1,pitch)
-    );
+    pitch=Math.max(.15,Math.min(1.1,pitch));
 
     lastX=x;
     lastY=y;
@@ -967,23 +922,12 @@ canvas.addEventListener(
    BUTTONS
 ===================================================== */
 
-const enterButton=
-  document.getElementById("interaction");
-
-const getOutButton=
-  document.getElementById("getOut");
-
-const getInButton=
-  document.getElementById("getIn");
-
-const exitButton=
-  document.getElementById("exit");
-
-const label=
-  document.getElementById("insideLabel");
-
-const hint=
-  document.getElementById("hint");
+const enterButton=document.getElementById("interaction");
+const getOutButton=document.getElementById("getOut");
+const getInButton=document.getElementById("getIn");
+const exitButton=document.getElementById("exit");
+const label=document.getElementById("insideLabel");
+const hint=document.getElementById("hint");
 
 
 /* =====================================================
@@ -996,7 +940,10 @@ getOutButton.onclick=function(){
 
   walking=true;
 
-  car.group.visible=false;
+  /* CAR STAYS PARKED AND VISIBLE */
+  car.group.visible=true;
+
+  /* PLAYER APPEARS BESIDE CAR */
   player.visible=true;
 
   player.position.set(
@@ -1013,8 +960,7 @@ getOutButton.onclick=function(){
   getOutButton.style.display="none";
   getInButton.style.display="block";
 
-  hint.textContent=
-    "Walk around Abuja";
+  hint.textContent="Walk around Abuja";
 };
 
 
@@ -1038,12 +984,9 @@ getInButton.onclick=function(){
   );
 
   getInButton.style.display="none";
-
-  /* FIX: SHOW GET OUT AGAIN */
   getOutButton.style.display="block";
 
-  hint.textContent=
-    "Drive around Abuja";
+  hint.textContent="Drive around Abuja";
 };
 
 
@@ -1059,9 +1002,7 @@ function doorDistance(){
   const dz=
     car.group.position.z-doorZ;
 
-  return Math.sqrt(
-    dx*dx+dz*dz
-  );
+  return Math.sqrt(dx*dx+dz*dz);
 }
 
 enterButton.onclick=function(){
@@ -1073,7 +1014,6 @@ enterButton.onclick=function(){
   interior.visible=true;
 
   car.group.visible=false;
-
   player.visible=true;
 
   player.position.set(
@@ -1091,8 +1031,7 @@ enterButton.onclick=function(){
   exitButton.style.display="block";
   label.style.display="block";
 
-  hint.textContent=
-    "Walk around your house";
+  hint.textContent="Walk around your house";
 };
 
 
@@ -1123,12 +1062,9 @@ exitButton.onclick=function(){
   label.style.display="none";
 
   getInButton.style.display="none";
-
-  /* SHOW GET OUT AFTER LEAVING HOUSE */
   getOutButton.style.display="block";
 
-  hint.textContent=
-    "Drive around Abuja";
+  hint.textContent="Drive around Abuja";
 };
 
 
@@ -1138,7 +1074,6 @@ exitButton.onclick=function(){
 
 let socket=null;
 let myId=null;
-
 const otherPlayers={};
 
 function connect(){
@@ -1146,18 +1081,14 @@ function connect(){
   try{
 
     const protocol=
-      location.protocol==="https:"
-      ?"wss:"
-      :"ws:";
+      location.protocol==="https:"?"wss:":"ws:";
 
     socket=new WebSocket(
       protocol+"//"+location.host
     );
 
     socket.onopen=function(){
-
       online.textContent="ONLINE";
-
       online.style.background=
         "rgba(0,120,40,.75)";
     };
@@ -1166,8 +1097,7 @@ function connect(){
 
       try{
 
-        const data=
-          JSON.parse(event.data);
+        const data=JSON.parse(event.data);
 
         if(data.type==="welcome")
           myId=data.id;
@@ -1185,24 +1115,17 @@ function connect(){
             if(!otherPlayers[id]){
 
               const p=new THREE.Mesh(
-                new THREE.BoxGeometry(
-                  2,1.4,4
-                ),
+                new THREE.BoxGeometry(2,1.4,4),
                 mat(0x2449a8)
               );
 
               p.position.y=.8;
-
               scene.add(p);
-
               otherPlayers[id]=p;
             }
 
-            const p=
-              otherPlayers[id];
-
-            const d=
-              data.players[id];
+            const p=otherPlayers[id];
+            const d=data.players[id];
 
             p.position.set(
               d.x,
@@ -1210,18 +1133,14 @@ function connect(){
               d.z
             );
 
-            p.rotation.y=
-              d.rotation;
+            p.rotation.y=d.rotation;
           }
 
           for(const id in otherPlayers){
 
             if(!active[id]){
 
-              scene.remove(
-                otherPlayers[id]
-              );
-
+              scene.remove(otherPlayers[id]);
               delete otherPlayers[id];
             }
           }
@@ -1233,9 +1152,7 @@ function connect(){
     };
 
     socket.onclose=function(){
-
       online.textContent="OFFLINE";
-
       online.style.background=
         "rgba(120,70,0,.75)";
     };
@@ -1245,7 +1162,6 @@ function connect(){
     };
 
   }catch(err){
-
     online.textContent="OFFLINE";
   }
 }
@@ -1258,15 +1174,9 @@ function connect(){
 window.addEventListener(
   "resize",
   ()=>{
-    camera.aspect=
-      innerWidth/innerHeight;
-
+    camera.aspect=innerWidth/innerHeight;
     camera.updateProjectionMatrix();
-
-    renderer.setSize(
-      innerWidth,
-      innerHeight
-    );
+    renderer.setSize(innerWidth,innerHeight);
   }
 );
 
@@ -1279,16 +1189,12 @@ function animate(){
 
   requestAnimationFrame(animate);
 
-
-  /* CAR */
-
   if(!walking && !inside){
-
     car.update(keys);
   }
 
 
-  /* PLAYER */
+  /* PLAYER MOVEMENT */
 
   if(walking){
 
@@ -1302,47 +1208,30 @@ function animate(){
 
     if(dx!==0 || dz!==0){
 
-      const len=
-        Math.sqrt(dx*dx+dz*dz);
+      const len=Math.sqrt(dx*dx+dz*dz);
 
       dx/=len;
       dz/=len;
 
-      const speed=
-        inside ? .075 : .12;
+      const speed=inside?.075:.12;
 
-      player.position.x+=
-        dx*speed;
+      player.position.x+=dx*speed;
+      player.position.z+=dz*speed;
 
-      player.position.z+=
-        dz*speed;
-
-      player.rotation.y=
-        Math.atan2(dx,dz);
+      player.rotation.y=Math.atan2(dx,dz);
     }
-
-
-    /* HOUSE BOUNDARY */
 
     if(inside){
 
-      player.position.x=
-        Math.max(
-          house.x-7.2,
-          Math.min(
-            house.x+7.2,
-            player.position.x
-          )
-        );
+      player.position.x=Math.max(
+        house.x-7.2,
+        Math.min(house.x+7.2,player.position.x)
+      );
 
-      player.position.z=
-        Math.max(
-          house.z-5.2,
-          Math.min(
-            house.z+5.5,
-            player.position.z
-          )
-        );
+      player.position.z=Math.max(
+        house.z-5.2,
+        Math.min(house.z+5.5,player.position.z)
+      );
     }
   }
 
@@ -1352,25 +1241,17 @@ function animate(){
   if(!inside && walking){
 
     const dx=
-      player.position.x-
-      car.group.position.x;
+      player.position.x-car.group.position.x;
 
     const dz=
-      player.position.z-
-      car.group.position.z;
+      player.position.z-car.group.position.z;
 
-    const distance=
-      Math.sqrt(dx*dx+dz*dz);
+    const distance=Math.sqrt(dx*dx+dz*dz);
 
     if(distance<4){
-
-      getInButton.style.display=
-        "block";
-
+      getInButton.style.display="block";
     }else{
-
-      getInButton.style.display=
-        "none";
+      getInButton.style.display="none";
     }
   }
 
@@ -1380,14 +1261,9 @@ function animate(){
   if(!inside && !walking){
 
     if(doorDistance()<13){
-
-      enterButton.style.display=
-        "block";
-
+      enterButton.style.display="block";
     }else{
-
-      enterButton.style.display=
-        "none";
+      enterButton.style.display="none";
     }
   }
 
@@ -1414,19 +1290,16 @@ function animate(){
   }
 
 
-  /* CAMERA TARGET */
+  /* CAMERA */
 
   const target=
     walking
       ?player.position.clone()
       :car.group.position.clone();
 
-  target.y+=
-    walking ? 1.5 : 1.8;
+  target.y+=walking?1.5:1.8;
 
-
-  const distance=
-    walking ? 6 : 11;
+  const distance=walking?6:11;
 
   const horizontal=
     Math.cos(pitch)*distance;
@@ -1442,7 +1315,6 @@ function animate(){
     target.z+
     Math.cos(orbit)*horizontal;
 
-
   camera.position.x+=
     (cx-camera.position.x)*.08;
 
@@ -1454,11 +1326,7 @@ function animate(){
 
   camera.lookAt(target);
 
-
-  renderer.render(
-    scene,
-    camera
-  );
+  renderer.render(scene,camera);
 }
 
 
@@ -1468,20 +1336,17 @@ function animate(){
 
 online.textContent="CONNECTING...";
 
-/* FIX: PLAYER STARTS INSIDE CAR, SO SHOW GET OUT */
 getOutButton.style.display="block";
 getInButton.style.display="none";
 enterButton.style.display="none";
 exitButton.style.display="none";
 
 connect();
-
 animate();
 
 }catch(error){
 
-  const box=
-    document.getElementById("online");
+  const box=document.getElementById("online");
 
   box.textContent=
     "GAME ERROR: "+error.message;
