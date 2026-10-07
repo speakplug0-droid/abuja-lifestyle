@@ -4,27 +4,64 @@ const path = require("path");
 const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
+const ROOT = __dirname;
+
+const mimeTypes = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml"
+};
 
 const server = http.createServer((req, res) => {
-  if (req.url === "/" || req.url === "/index.html") {
-    const filePath = path.join(__dirname, "index.html");
+  try {
+    const url = new URL(
+      req.url,
+      `http://${req.headers.host || "localhost"}`
+    );
 
-    fs.readFile(filePath, (error, data) => {
-      if (error) {
-        res.writeHead(500, { "Content-Type": "text/plain" });
-        res.end("AbujaLifestyle game is loading...");
+    let pathname = decodeURIComponent(url.pathname);
+
+    if (pathname === "/") {
+      pathname = "/index.html";
+    }
+
+    const filePath = path.resolve(ROOT, "." + pathname);
+
+    if (!filePath.startsWith(ROOT + path.sep)) {
+      res.writeHead(403);
+      res.end("Forbidden");
+      return;
+    }
+
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.writeHead(404, {
+          "Content-Type": "text/plain; charset=utf-8"
+        });
+        res.end("Not found");
         return;
       }
 
-      res.writeHead(200, { "Content-Type": "text/html" });
+      const ext = path.extname(filePath).toLowerCase();
+
+      res.writeHead(200, {
+        "Content-Type":
+          mimeTypes[ext] || "application/octet-stream",
+        "Cache-Control": "no-cache"
+      });
+
       res.end(data);
     });
-
-    return;
+  } catch (error) {
+    res.writeHead(500);
+    res.end("Server error");
   }
-
-  res.writeHead(404, { "Content-Type": "text/plain" });
-  res.end("Not found");
 });
 
 const wss = new WebSocket.Server({ server });
@@ -41,10 +78,12 @@ wss.on("connection", (socket) => {
     rotation: 0
   });
 
-  socket.send(JSON.stringify({
-    type: "welcome",
-    id
-  }));
+  socket.send(
+    JSON.stringify({
+      type: "welcome",
+      id
+    })
+  );
 
   socket.on("message", (message) => {
     try {
@@ -54,13 +93,13 @@ wss.on("connection", (socket) => {
         const player = players.get(id);
 
         if (player) {
-          player.x = data.x;
-          player.y = data.y;
-          player.z = data.z;
-          player.rotation = data.rotation;
+          player.x = Number(data.x) || 0;
+          player.y = Number(data.y) || 0;
+          player.z = Number(data.z) || 0;
+          player.rotation = Number(data.rotation) || 0;
         }
       }
-    } catch (error) {
+    } catch {
       console.log("Invalid message");
     }
   });
