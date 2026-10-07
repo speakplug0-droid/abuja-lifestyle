@@ -680,85 +680,75 @@ const player=new THREE.Group();
 player.visible=false;
 scene.add(player);
 
-const legMaterial=mat(0x20252b);
-const shoeMaterial=mat(0x111111);
-const shirtMaterial=mat(0xeeeeee);
-const skinMaterial=mat(0x7a4933);
+let playerReady=false;
 
-function part(geometry,material,x,y,z){
+async function loadPlayerModel(){
+  try{
+    const module=await import(
+      "https://esm.sh/three@0.160.0/examples/jsm/loaders/GLTFLoader.js"
+    );
 
-  const p=new THREE.Mesh(
-    geometry,
-    material
-  );
+    const loader=new module.GLTFLoader();
 
-  p.position.set(x,y,z);
-  p.castShadow=true;
+    loader.load(
+      "./Superhero_Male_FullBody.gltf",
+      (gltf)=>{
+        const model=gltf.scene;
 
-  player.add(p);
+        const box=new THREE.Box3().setFromObject(model);
+        const size=box.getSize(new THREE.Vector3());
 
-  return p;
+        const targetHeight=2.35;
+
+        if(size.y>0){
+          const scale=targetHeight/size.y;
+          model.scale.setScalar(scale);
+        }
+
+        const scaledBox=new THREE.Box3().setFromObject(model);
+        const center=scaledBox.getCenter(new THREE.Vector3());
+
+        model.position.x-=center.x;
+        model.position.z-=center.z;
+
+        const groundBox=new THREE.Box3().setFromObject(model);
+        model.position.y-=groundBox.min.y;
+
+        model.traverse((object)=>{
+          if(!object.isMesh)return;
+
+          object.castShadow=true;
+          object.receiveShadow=true;
+
+          if(object.material){
+            const materials=Array.isArray(object.material)
+              ?object.material
+              :[object.material];
+
+            materials.forEach((material)=>{
+              if("side" in material){
+                material.side=THREE.FrontSide;
+              }
+            });
+          }
+        });
+
+        player.add(model);
+        playerReady=true;
+
+        console.log("AbujaLifestyle: REAL 3D PLAYER LOADED");
+      },
+      undefined,
+      (error)=>{
+        console.error("PLAYER MODEL ERROR:",error);
+      }
+    );
+  }catch(error){
+    console.error("PLAYER LOADER ERROR:",error);
+  }
 }
 
-part(
-  new THREE.CapsuleGeometry(.16,.72,6,10),
-  legMaterial,-.22,.65,0
-);
-
-part(
-  new THREE.CapsuleGeometry(.16,.72,6,10),
-  legMaterial,.22,.65,0
-);
-
-part(
-  new THREE.BoxGeometry(.38,.18,.65),
-  shoeMaterial,-.22,.18,-.08
-);
-
-part(
-  new THREE.BoxGeometry(.38,.18,.65),
-  shoeMaterial,.22,.18,-.08
-);
-
-part(
-  new THREE.CapsuleGeometry(.42,.72,8,12),
-  shirtMaterial,0,1.45,0
-);
-
-part(
-  new THREE.CylinderGeometry(.16,.17,.22,12),
-  skinMaterial,0,2.05,0
-);
-
-part(
-  new THREE.SphereGeometry(.34,20,16),
-  skinMaterial,0,2.42,0
-);
-
-part(
-  new THREE.SphereGeometry(.355,20,12),
-  mat(0x17120f),0,2.57,0
-);
-
-part(
-  new THREE.CapsuleGeometry(.13,.65,6,10),
-  shirtMaterial,-.52,1.48,0
-);
-
-part(
-  new THREE.CapsuleGeometry(.13,.65,6,10),
-  shirtMaterial,.52,1.48,0
-);
-
-part(
-  new THREE.SphereGeometry(.15,12,8),
-  skinMaterial,-.52,1.02,0
-);
-
-part(
-  new THREE.SphereGeometry(.15,12,8),
-  skinMaterial,.52,1.02,0
-);
+loadPlayerModel();
 
 
 /* =====================================================
