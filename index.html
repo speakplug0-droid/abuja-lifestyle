@@ -695,24 +695,11 @@ async function loadPlayerModel(){
       (gltf)=>{
         const model=gltf.scene;
 
-        const box=new THREE.Box3().setFromObject(model);
-        const size=box.getSize(new THREE.Vector3());
-
-        const targetHeight=2.35;
-
-        if(size.y>0){
-          const scale=targetHeight/size.y;
-          model.scale.setScalar(scale);
-        }
-
-        const scaledBox=new THREE.Box3().setFromObject(model);
-        const center=scaledBox.getCenter(new THREE.Vector3());
-
-        model.position.x-=center.x;
-        model.position.z-=center.z;
-
-        const groundBox=new THREE.Box3().setFromObject(model);
-        model.position.y-=groundBox.min.y;
+        // This character asset is already authored at game-ready human scale.
+        // Do not normalize with Box3: skinned meshes can report an incorrect
+        // pre-skin bounding box and become massively oversized.
+        model.scale.setScalar(1.0);
+        model.position.set(0,0,0);
 
         model.traverse((object)=>{
           if(!object.isMesh)return;
