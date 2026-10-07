@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AbujaLifestyle</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #111;
+    font-family: Arial, sans-serif;
+}
+
+#game {
+    width: 100vw;
+    height: 100vh;
+    background: #263238;
+    position: relative;
+    overflow: hidden;
+}
+
+#road {
+    position: absolute;
+    left: 15%;
+    width: 70%;
+    height: 100%;
+    background: #333;
+}
+
+.lane {
+    position: absolute;
+    width: 6px;
+    height: 70px;
+    background: white;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: .8;
+}
+
+#player {
+    position: absolute;
+    width: 45px;
+    height: 75px;
+    background: red;
+    border-radius: 10px;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#controls {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    z-index: 10;
+}
+
+button {
+    width: 90px;
+    height: 60px;
+    border: none;
+    border-radius: 15px;
+    font-size: 30px;
+    background: rgba(255,255,255,.8);
+}
+
+#title {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    z-index: 5;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div id="title">🇳🇬 AbujaLifestyle</div>
+
+    <div id="road"></div>
+
+    <div class="lane" style="top:0"></div>
+    <div class="lane" style="top:160px"></div>
+    <div class="lane" style="top:320px"></div>
+    <div class="lane" style="top:480px"></div>
+    <div class="lane" style="top:640px"></div>
+
+    <div id="player"></div>
+
+    <div id="controls">
+        <button onclick="moveLeft()">⬅️</button>
+        <button onclick="moveRight()">➡️</button>
+    </div>
+
+</div>
+
+<script>
+let player = document.getElementById("player");
+let position = 50;
+
+function moveLeft() {
+    position -= 7;
+    if (position < 18) position = 18;
+    player.style.left = position + "%";
+}
+
+function moveRight() {
+    position += 7;
+    if (position > 82) position = 82;
+    player.style.left = position + "%";
+}
+</script>
+
+</body>
+</html>
