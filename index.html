@@ -7,85 +7,101 @@
 <title>AbujaLifestyle</title>
 
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #87ceeb;
-  font-family: Arial, sans-serif;
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#87ceeb;
+  font-family:Arial,sans-serif;
 }
 
-#game {
-  width: 100%;
-  height: 100%;
-  display: block;
-  touch-action: none;
+#game{
+  width:100%;
+  height:100%;
+  display:block;
+  touch-action:none;
 }
 
-#title {
-  position: fixed;
-  top: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  text-shadow: 2px 2px 5px black;
-  z-index: 10;
-  pointer-events: none;
+#title{
+  position:fixed;
+  top:15px;
+  left:50%;
+  transform:translateX(-50%);
+  color:white;
+  font-size:24px;
+  font-weight:bold;
+  text-shadow:2px 2px 5px black;
+  z-index:10;
+  pointer-events:none;
+  white-space:nowrap;
 }
 
-#info {
-  position: fixed;
-  top: 55px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  text-shadow: 1px 1px 4px black;
-  z-index: 10;
-  pointer-events: none;
+#info{
+  position:fixed;
+  top:55px;
+  left:50%;
+  transform:translateX(-50%);
+  color:white;
+  text-shadow:1px 1px 4px black;
+  z-index:10;
+  pointer-events:none;
 }
 
-#controls {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 20;
+#online{
+  position:fixed;
+  top:88px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:7px 14px;
+  border-radius:16px;
+  background:rgba(0,0,0,.55);
+  color:white;
+  font-size:14px;
+  z-index:20;
+  pointer-events:none;
+  white-space:nowrap;
 }
 
-button {
-  width: 60px;
-  height: 60px;
-  margin: 4px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(0,0,0,0.55);
-  color: white;
-  font-size: 22px;
-  touch-action: none;
-  user-select: none;
+#mode{
+  position:fixed;
+  top:125px;
+  left:50%;
+  transform:translateX(-50%);
+  padding:8px 15px;
+  border-radius:15px;
+  background:rgba(0,0,0,.5);
+  color:white;
+  z-index:20;
+  pointer-events:none;
 }
 
-#rightControls {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 20;
+#controls{
+  position:fixed;
+  bottom:20px;
+  left:20px;
+  z-index:20;
 }
 
-#mode {
-  position: fixed;
-  top: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 8px 15px;
-  border-radius: 15px;
-  background: rgba(0,0,0,0.5);
-  color: white;
-  z-index: 20;
-  pointer-events: none;
+button{
+  width:60px;
+  height:60px;
+  margin:4px;
+  border:none;
+  border-radius:50%;
+  background:rgba(0,0,0,.55);
+  color:white;
+  font-size:22px;
+  touch-action:none;
+  user-select:none;
+}
+
+#rightControls{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  z-index:20;
 }
 </style>
 </head>
@@ -94,11 +110,11 @@ button {
 
 <div id="title">AbujaLifestyle</div>
 <div id="info">Abuja • Open World</div>
+<div id="online">Connecting...</div>
 <div id="mode">Driving</div>
 
 <div id="controls">
   <button id="forward">▲</button><br>
-
   <button id="left">◀</button>
   <button id="back">▼</button>
   <button id="right">▶</button>
@@ -111,14 +127,13 @@ button {
 <canvas id="game"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-
 <script src="car.js"></script>
 
 <script>
 
-/* =========================
+/* =====================================================
    SCENE
-========================= */
+===================================================== */
 
 const scene = new THREE.Scene();
 
@@ -126,9 +141,9 @@ scene.background =
   new THREE.Color(0x87ceeb);
 
 
-/* =========================
+/* =====================================================
    CAMERA
-========================= */
+===================================================== */
 
 const camera =
   new THREE.PerspectiveCamera(
@@ -138,47 +153,23 @@ const camera =
     1000
   );
 
-
-/*
-  Camera distance from car
-*/
 const cameraDistance = 11;
 
-
-/*
-  Camera vertical angle
-*/
 let cameraPitch = 0.45;
-
-
-/*
-  Extra camera rotation around car.
-
-  0 = directly behind car
-*/
 let cameraOrbit = 0;
 
-
-/*
-  Camera starts behind the car
-*/
 const behindAngle = Math.PI;
-
-
-/*
-  Camera target height
-*/
 const cameraTargetHeight = 1.2;
 
 
-/* =========================
+/* =====================================================
    RENDERER
-========================= */
+===================================================== */
 
 const renderer =
   new THREE.WebGLRenderer({
-    canvas: document.getElementById("game"),
-    antialias: true
+    canvas:document.getElementById("game"),
+    antialias:true
   });
 
 renderer.setSize(
@@ -187,16 +178,13 @@ renderer.setSize(
 );
 
 renderer.setPixelRatio(
-  Math.min(
-    window.devicePixelRatio,
-    2
-  )
+  Math.min(window.devicePixelRatio,2)
 );
 
 
-/* =========================
+/* =====================================================
    LIGHTING
-========================= */
+===================================================== */
 
 const sunlight =
   new THREE.DirectionalLight(
@@ -222,90 +210,53 @@ const ambient =
 scene.add(ambient);
 
 
-/* =========================
+/* =====================================================
    GROUND
-========================= */
-
-const groundGeometry =
-  new THREE.PlaneGeometry(
-    500,
-    500
-  );
-
-const groundMaterial =
-  new THREE.MeshStandardMaterial({
-    color: 0x3f7d3a
-  });
+===================================================== */
 
 const ground =
   new THREE.Mesh(
-    groundGeometry,
-    groundMaterial
+    new THREE.PlaneGeometry(500,500),
+    new THREE.MeshStandardMaterial({
+      color:0x3f7d3a
+    })
   );
 
-ground.rotation.x =
-  -Math.PI / 2;
+ground.rotation.x = -Math.PI/2;
 
 scene.add(ground);
 
 
-/* =========================
+/* =====================================================
    ROADS
-========================= */
+===================================================== */
 
-function createRoad(
-  x,
-  z,
-  width,
-  depth
-) {
-
-  const geometry =
-    new THREE.BoxGeometry(
-      width,
-      0.05,
-      depth
-    );
-
-  const material =
-    new THREE.MeshStandardMaterial({
-      color: 0x333333
-    });
+function createRoad(x,z,width,depth){
 
   const road =
     new THREE.Mesh(
-      geometry,
-      material
+      new THREE.BoxGeometry(
+        width,
+        0.05,
+        depth
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0x333333
+      })
     );
 
-  road.position.set(
-    x,
-    0.03,
-    z
-  );
+  road.position.set(x,0.03,z);
 
   scene.add(road);
 }
 
-
-createRoad(
-  0,
-  0,
-  500,
-  18
-);
-
-createRoad(
-  0,
-  0,
-  18,
-  500
-);
+createRoad(0,0,500,18);
+createRoad(0,0,18,500);
 
 
-/* =========================
+/* =====================================================
    BUILDINGS
-========================= */
+===================================================== */
 
 function createBuilding(
   x,
@@ -313,29 +264,23 @@ function createBuilding(
   width,
   height,
   depth
-) {
-
-  const geometry =
-    new THREE.BoxGeometry(
-      width,
-      height,
-      depth
-    );
-
-  const material =
-    new THREE.MeshStandardMaterial({
-      color: 0xd0d0d0
-    });
+){
 
   const building =
     new THREE.Mesh(
-      geometry,
-      material
+      new THREE.BoxGeometry(
+        width,
+        height,
+        depth
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0xd0d0d0
+      })
     );
 
   building.position.set(
     x,
-    height / 2,
+    height/2,
     z
   );
 
@@ -343,17 +288,13 @@ function createBuilding(
 }
 
 
-for (
-  let x = -100;
-  x <= 100;
-  x += 30
-) {
+for(let x=-100;x<=100;x+=30){
 
   createBuilding(
     x,
     -45,
     18,
-    10 + Math.random() * 20,
+    10 + Math.random()*20,
     18
   );
 
@@ -361,23 +302,19 @@ for (
     x,
     45,
     18,
-    10 + Math.random() * 20,
+    10 + Math.random()*20,
     18
   );
 }
 
 
-for (
-  let z = -90;
-  z <= 90;
-  z += 30
-) {
+for(let z=-90;z<=90;z+=30){
 
   createBuilding(
     -45,
     z,
     18,
-    10 + Math.random() * 20,
+    10 + Math.random()*20,
     18
   );
 
@@ -385,72 +322,21 @@ for (
     45,
     z,
     18,
-    10 + Math.random() * 20,
+    10 + Math.random()*20,
     18
   );
 }
 
 
-/* =========================
-   PLAYER
-========================= */
-
-const player =
-  new THREE.Group();
-
-
-const body =
-  new THREE.Mesh(
-    new THREE.BoxGeometry(
-      1,
-      1.8,
-      0.6
-    ),
-    new THREE.MeshStandardMaterial({
-      color: 0x222222
-    })
-  );
-
-body.position.y = 1;
-
-
-const head =
-  new THREE.Mesh(
-    new THREE.SphereGeometry(
-      0.4,
-      16,
-      16
-    ),
-    new THREE.MeshStandardMaterial({
-      color: 0x8d5524
-    })
-  );
-
-head.position.y = 2.2;
-
-
-player.add(body);
-player.add(head);
-
-player.position.set(
-  0,
-  0,
-  8
-);
-
-scene.add(player);
-
-
-/* =========================
+/* =====================================================
    CONTROLS
-========================= */
+===================================================== */
 
 const keys = {};
 
-
 window.addEventListener(
   "keydown",
-  function(event) {
+  function(event){
 
     keys[
       event.key.toLowerCase()
@@ -459,10 +345,9 @@ window.addEventListener(
   }
 );
 
-
 window.addEventListener(
   "keyup",
-  function(event) {
+  function(event){
 
     keys[
       event.key.toLowerCase()
@@ -472,10 +357,7 @@ window.addEventListener(
 );
 
 
-function holdButton(
-  id,
-  key
-) {
+function holdButton(id,key){
 
   const button =
     document.getElementById(id);
@@ -483,46 +365,46 @@ function holdButton(
 
   button.addEventListener(
     "touchstart",
-    function(event) {
+    function(event){
 
       event.preventDefault();
 
       keys[key] = true;
 
     },
-    { passive: false }
+    {passive:false}
   );
 
 
   button.addEventListener(
     "touchend",
-    function(event) {
+    function(event){
 
       event.preventDefault();
 
       keys[key] = false;
 
     },
-    { passive: false }
+    {passive:false}
   );
 
 
   button.addEventListener(
     "touchcancel",
-    function(event) {
+    function(event){
 
       event.preventDefault();
 
       keys[key] = false;
 
     },
-    { passive: false }
+    {passive:false}
   );
 
 
   button.addEventListener(
     "mousedown",
-    function() {
+    function(){
 
       keys[key] = true;
 
@@ -532,7 +414,7 @@ function holdButton(
 
   button.addEventListener(
     "mouseup",
-    function() {
+    function(){
 
       keys[key] = false;
 
@@ -542,7 +424,7 @@ function holdButton(
 
   button.addEventListener(
     "mouseleave",
-    function() {
+    function(){
 
       keys[key] = false;
 
@@ -551,30 +433,15 @@ function holdButton(
 }
 
 
-holdButton(
-  "forward",
-  "w"
-);
-
-holdButton(
-  "back",
-  "s"
-);
-
-holdButton(
-  "left",
-  "a"
-);
-
-holdButton(
-  "right",
-  "d"
-);
+holdButton("forward","w");
+holdButton("back","s");
+holdButton("left","a");
+holdButton("right","d");
 
 
-/* =========================
-   CREATE CAR
-========================= */
+/* =====================================================
+   MY CAR
+===================================================== */
 
 const car =
   new Car(
@@ -584,9 +451,364 @@ const car =
   );
 
 
-/* =========================
-   CAMERA TOUCH CONTROL
-========================= */
+/* =====================================================
+   MULTIPLAYER
+===================================================== */
+
+let myPlayerId = null;
+
+const otherPlayers = new Map();
+
+let socket = null;
+
+
+/* Create another player's vehicle */
+
+function createOtherPlayer(){
+
+  const group =
+    new THREE.Group();
+
+
+  const body =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        2.2,
+        0.7,
+        4
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0x555555,
+        metalness:0.6,
+        roughness:0.25
+      })
+    );
+
+  body.position.y = 0.65;
+
+  group.add(body);
+
+
+  const roof =
+    new THREE.Mesh(
+      new THREE.BoxGeometry(
+        1.7,
+        0.55,
+        2
+      ),
+      new THREE.MeshStandardMaterial({
+        color:0x222222,
+        metalness:0.5,
+        roughness:0.25
+      })
+    );
+
+  roof.position.y = 1.15;
+
+  group.add(roof);
+
+
+  const wheelMaterial =
+    new THREE.MeshStandardMaterial({
+      color:0x050505,
+      roughness:0.9
+    });
+
+
+  const wheels = [
+    [-1.05,0.45,-1.35],
+    [1.05,0.45,-1.35],
+    [-1.05,0.45,1.35],
+    [1.05,0.45,1.35]
+  ];
+
+
+  wheels.forEach(function(pos){
+
+    const wheel =
+      new THREE.Mesh(
+        new THREE.CylinderGeometry(
+          0.4,
+          0.4,
+          0.3,
+          20
+        ),
+        wheelMaterial
+      );
+
+    wheel.rotation.z =
+      Math.PI/2;
+
+    wheel.position.set(
+      pos[0],
+      pos[1],
+      pos[2]
+    );
+
+    group.add(wheel);
+
+  });
+
+
+  scene.add(group);
+
+  return group;
+}
+
+
+/* Update visible online players */
+
+function updateOtherPlayers(players){
+
+  const activeIds =
+    new Set();
+
+
+  for(
+    const id in players
+  ){
+
+    if(id === myPlayerId){
+      continue;
+    }
+
+
+    activeIds.add(id);
+
+
+    let player =
+      otherPlayers.get(id);
+
+
+    if(!player){
+
+      player =
+        createOtherPlayer();
+
+      player.position.set(
+        players[id].x,
+        players[id].y,
+        players[id].z
+      );
+
+      player.rotation.y =
+        players[id].rotation || 0;
+
+      otherPlayers.set(
+        id,
+        player
+      );
+    }
+
+
+    const data =
+      players[id];
+
+
+    /* Smooth movement */
+
+    player.position.x +=
+      (data.x-player.position.x)*0.35;
+
+    player.position.y +=
+      (data.y-player.position.y)*0.35;
+
+    player.position.z +=
+      (data.z-player.position.z)*0.35;
+
+
+    player.rotation.y +=
+      (
+        (data.rotation || 0) -
+        player.rotation.y
+      )*0.35;
+  }
+
+
+  /* Remove disconnected players */
+
+  for(
+    const [id,player]
+    of otherPlayers
+  ){
+
+    if(!activeIds.has(id)){
+
+      scene.remove(player);
+
+      otherPlayers.delete(id);
+    }
+  }
+
+
+  const onlineCount =
+    Object.keys(players).length;
+
+
+  document.getElementById(
+    "online"
+  ).textContent =
+    "🟢 Online players: " +
+    onlineCount;
+}
+
+
+/* Connect to our WebSocket server */
+
+function connectMultiplayer(){
+
+  const protocol =
+    location.protocol === "https:"
+      ? "wss:"
+      : "ws:";
+
+
+  const address =
+    protocol +
+    "//" +
+    location.host;
+
+
+  try{
+
+    socket =
+      new WebSocket(address);
+
+
+    socket.addEventListener(
+      "open",
+      function(){
+
+        document.getElementById(
+          "online"
+        ).textContent =
+          "🟢 Online players: 1";
+
+      }
+    );
+
+
+    socket.addEventListener(
+      "message",
+      function(event){
+
+        try{
+
+          const data =
+            JSON.parse(event.data);
+
+
+          if(
+            data.type === "welcome"
+          ){
+
+            myPlayerId =
+              data.id;
+
+            return;
+          }
+
+
+          if(
+            data.type === "players"
+          ){
+
+            updateOtherPlayers(
+              data.players
+            );
+          }
+
+        }catch(error){
+
+          console.error(
+            "Multiplayer data error:",
+            error
+          );
+        }
+
+      }
+    );
+
+
+    socket.addEventListener(
+      "close",
+      function(){
+
+        document.getElementById(
+          "online"
+        ).textContent =
+          "🔴 Multiplayer offline";
+
+      }
+    );
+
+
+    socket.addEventListener(
+      "error",
+      function(){
+
+        document.getElementById(
+          "online"
+        ).textContent =
+          "🔴 Multiplayer error";
+
+      }
+    );
+
+  }catch(error){
+
+    console.error(
+      "WebSocket error:",
+      error
+    );
+
+  }
+}
+
+
+/* Send our position */
+
+setInterval(
+  function(){
+
+    if(
+      !socket ||
+      socket.readyState !==
+      WebSocket.OPEN
+    ){
+
+      return;
+    }
+
+
+    socket.send(
+      JSON.stringify({
+
+        type:"position",
+
+        x:car.group.position.x,
+
+        y:car.group.position.y,
+
+        z:car.group.position.z,
+
+        rotation:
+          car.group.rotation.y
+
+      })
+    );
+
+  },
+  50
+);
+
+
+connectMultiplayer();
+
+
+/* =====================================================
+   CAMERA TOUCH
+===================================================== */
 
 const canvas =
   document.getElementById("game");
@@ -599,11 +821,15 @@ let lastTouchY = 0;
 
 canvas.addEventListener(
   "touchstart",
-  function(event) {
+  function(event){
 
-    if (event.touches.length !== 1) {
+    if(
+      event.touches.length !== 1
+    ){
+
       return;
     }
+
 
     touchingCamera = true;
 
@@ -614,57 +840,52 @@ canvas.addEventListener(
       event.touches[0].clientY;
 
   },
-  { passive: false }
+  {passive:false}
 );
 
 
 canvas.addEventListener(
   "touchmove",
-  function(event) {
+  function(event){
 
-    if (!touchingCamera) {
+    if(!touchingCamera){
+
       return;
     }
 
-    if (event.touches.length !== 1) {
+
+    if(
+      event.touches.length !== 1
+    ){
+
       return;
     }
+
 
     event.preventDefault();
+
 
     const touch =
       event.touches[0];
 
 
     const deltaX =
-      touch.clientX - lastTouchX;
+      touch.clientX -
+      lastTouchX;
+
 
     const deltaY =
-      touch.clientY - lastTouchY;
+      touch.clientY -
+      lastTouchY;
 
-
-    /*
-      Horizontal swipe
-      rotates camera around car
-    */
 
     cameraOrbit -=
       deltaX * 0.008;
 
 
-    /*
-      Vertical swipe
-      moves camera up/down
-    */
-
     cameraPitch -=
       deltaY * 0.006;
 
-
-    /*
-      Prevent camera from going
-      completely underneath the ground
-    */
 
     cameraPitch =
       Math.max(
@@ -683,66 +904,49 @@ canvas.addEventListener(
       touch.clientY;
 
   },
-  { passive: false }
+  {passive:false}
 );
 
 
 canvas.addEventListener(
   "touchend",
-  function() {
+  function(){
 
     touchingCamera = false;
 
-  },
-  { passive: false }
+  }
 );
 
 
 canvas.addEventListener(
   "touchcancel",
-  function() {
+  function(){
 
     touchingCamera = false;
 
-  },
-  { passive: false }
+  }
 );
 
 
-/* =========================
-   CAMERA UPDATE
-========================= */
+/* =====================================================
+   CAMERA
+===================================================== */
 
-function updateCamera() {
+function updateCamera(){
 
   const carPosition =
     car.group.position;
 
 
-  /*
-    Car's current rotation
-  */
-
   const carRotation =
     car.group.rotation.y;
 
-
-  /*
-    Camera starts behind the car.
-
-    Swiping changes cameraOrbit,
-    allowing a full 360° view.
-  */
 
   const angle =
     carRotation +
     behindAngle +
     cameraOrbit;
 
-
-  /*
-    Calculate camera position
-  */
 
   const horizontalDistance =
     cameraDistance *
@@ -784,20 +988,16 @@ function updateCamera() {
     verticalDistance;
 
 
-  /*
-    Smooth camera movement
-  */
-
   camera.position.x +=
-    (desiredX - camera.position.x) *
+    (desiredX-camera.position.x)*
     0.12;
 
   camera.position.y +=
-    (desiredY - camera.position.y) *
+    (desiredY-camera.position.y)*
     0.12;
 
   camera.position.z +=
-    (desiredZ - camera.position.z) *
+    (desiredZ-camera.position.z)*
     0.12;
 
 
@@ -809,34 +1009,22 @@ function updateCamera() {
 }
 
 
-/* =========================
+/* =====================================================
    GAME LOOP
-========================= */
+===================================================== */
 
-function animate() {
+function animate(){
 
   requestAnimationFrame(
     animate
   );
 
 
-  /*
-    Drive car
-  */
-
   car.update(keys);
 
 
-  /*
-    Update third-person camera
-  */
-
   updateCamera();
 
-
-  /*
-    Render
-  */
 
   renderer.render(
     scene,
@@ -848,13 +1036,13 @@ function animate() {
 animate();
 
 
-/* =========================
+/* =====================================================
    RESIZE
-========================= */
+===================================================== */
 
 window.addEventListener(
   "resize",
-  function() {
+  function(){
 
     camera.aspect =
       window.innerWidth /
