@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
 <title>AbujaLifestyle</title>
 
 <style>
@@ -15,8 +16,8 @@
 body {
   margin: 0;
   overflow: hidden;
-  background: #6fa34f;
   font-family: Arial, sans-serif;
+  background: #6fa34f;
 }
 
 #game {
@@ -31,8 +32,8 @@ body {
 #sky {
   position: absolute;
   width: 100%;
-  height: 45%;
-  background: linear-gradient(#65bde8, #d7f2ff);
+  height: 42%;
+  background: linear-gradient(#65bde8, #d9f3ff);
 }
 
 /* GROUND */
@@ -47,18 +48,18 @@ body {
 /* ROAD */
 #road {
   position: absolute;
-  left: 20%;
+  left: 18%;
   top: 0;
-  width: 60%;
+  width: 64%;
   height: 100%;
-  background: #333;
+  background: #303030;
 }
 
 .road-line {
   position: absolute;
   left: 50%;
   width: 7px;
-  height: 80px;
+  height: 85px;
   background: white;
   transform: translateX(-50%);
 }
@@ -66,67 +67,173 @@ body {
 /* BUILDINGS */
 .building {
   position: absolute;
-  background: #8d735f;
-  border: 3px solid #544438;
   bottom: 38%;
+  border: 3px solid #514236;
+  background: #92745e;
 }
 
 .b1 {
   left: 2%;
-  width: 85px;
-  height: 150px;
+  width: 90px;
+  height: 145px;
 }
 
 .b2 {
   left: 12%;
-  width: 70px;
+  width: 75px;
   height: 110px;
-  background: #a68a70;
+  background: #ad8c70;
 }
 
 .b3 {
   right: 12%;
-  width: 80px;
+  width: 85px;
   height: 135px;
   background: #777;
 }
 
 .b4 {
   right: 2%;
-  width: 90px;
-  height: 170px;
-  background: #96745f;
+  width: 95px;
+  height: 165px;
+  background: #99755e;
 }
 
 /* PLAYER */
 #player {
   position: absolute;
-  width: 38px;
-  height: 58px;
-  left: 50%;
-  top: 55%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
+  width: 44px;
+  height: 82px;
+  left: 48%;
+  top: 65%;
+  z-index: 15;
 }
 
+/* head */
 .head {
   position: absolute;
-  width: 25px;
-  height: 25px;
-  background: #8d5524;
-  border-radius: 50%;
-  left: 7px;
+  left: 9px;
   top: 0;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #8b542c;
+  border: 2px solid #222;
 }
 
+/* hair */
+.hair {
+  position: absolute;
+  left: 10px;
+  top: 1px;
+  width: 25px;
+  height: 10px;
+  border-radius: 14px 14px 5px 5px;
+  background: #111;
+  z-index: 2;
+}
+
+/* shirt */
 .body {
   position: absolute;
-  width: 32px;
-  height: 35px;
+  left: 5px;
+  top: 27px;
+  width: 34px;
+  height: 32px;
+  border-radius: 8px;
+  background: #202020;
+  border: 2px solid #111;
+}
+
+/* legs */
+.leg {
+  position: absolute;
+  top: 57px;
+  width: 13px;
+  height: 25px;
+  border-radius: 5px;
+  background: #202020;
+  border: 2px solid #111;
+}
+
+.left-leg {
+  left: 7px;
+}
+
+.right-leg {
+  right: 7px;
+}
+
+/* VELAR */
+#velar {
+  position: absolute;
+  width: 105px;
+  height: 62px;
+  left: 65%;
+  top: 68%;
+  z-index: 12;
+  display: none;
+}
+
+/* SUV body */
+.velar-body {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 105px;
+  height: 38px;
+  border-radius: 12px 12px 8px 8px;
+  background: #222;
+  border: 3px solid #111;
+}
+
+/* roof */
+.velar-roof {
+  position: absolute;
+  left: 22px;
+  top: 4px;
+  width: 62px;
+  height: 28px;
+  border-radius: 15px 15px 5px 5px;
+  background: #303030;
+  border: 3px solid #111;
+}
+
+/* windows */
+.velar-window {
+  position: absolute;
+  top: 9px;
+  width: 24px;
+  height: 17px;
+  background: #79b9d0;
+  border: 2px solid #111;
+}
+
+.window1 {
+  left: 29px;
+}
+
+.window2 {
+  right: 29px;
+}
+
+/* wheels */
+.wheel {
+  position: absolute;
+  bottom: -7px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
   background: #111;
-  border-radius: 9px 9px 4px 4px;
-  left: 3px;
-  top: 23px;
+  border: 3px solid #777;
+}
+
+.wheel1 {
+  left: 12px;
+}
+
+.wheel2 {
+  right: 12px;
 }
 
 /* HUD */
@@ -137,53 +244,15 @@ body {
   right: 15px;
   display: flex;
   justify-content: space-between;
-  z-index: 20;
+  z-index: 30;
 }
 
-.hud-box {
-  background: rgba(0,0,0,.7);
-  color: white;
+.hud {
   padding: 9px 12px;
+  color: white;
+  background: rgba(0,0,0,.72);
   border-radius: 10px;
   font-weight: bold;
-}
-
-/* JOYSTICK */
-#joystick {
-  position: absolute;
-  left: 25px;
-  bottom: 25px;
-  width: 120px;
-  height: 120px;
-  background: rgba(0,0,0,.3);
-  border: 2px solid rgba(255,255,255,.7);
-  border-radius: 50%;
-  z-index: 30;
-}
-
-#stick {
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  background: rgba(255,255,255,.85);
-  border-radius: 50%;
-  left: 30px;
-  top: 30px;
-}
-
-/* ACTION BUTTON */
-#action {
-  position: absolute;
-  right: 30px;
-  bottom: 45px;
-  width: 75px;
-  height: 75px;
-  border-radius: 50%;
-  border: 2px solid white;
-  background: rgba(0,0,0,.65);
-  color: white;
-  font-weight: bold;
-  z-index: 30;
 }
 
 /* TITLE */
@@ -193,10 +262,59 @@ body {
   width: 100%;
   text-align: center;
   color: white;
-  font-size: 20px;
+  font-size: 21px;
+  font-weight: bold;
+  text-shadow: 2px 2px 5px #000;
+  z-index: 30;
+}
+
+/* JOYSTICK */
+#joystick {
+  position: absolute;
+  left: 25px;
+  bottom: 25px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.3);
+  border: 2px solid rgba(255,255,255,.8);
+  z-index: 40;
+}
+
+#stick {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.9);
+}
+
+/* ACTION */
+#action {
+  position: absolute;
+  right: 30px;
+  bottom: 45px;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  border: 2px solid white;
+  background: rgba(0,0,0,.72);
+  color: white;
+  font-weight: bold;
+  z-index: 40;
+}
+
+#status {
+  position: absolute;
+  bottom: 145px;
+  width: 100%;
+  text-align: center;
+  color: white;
   font-weight: bold;
   text-shadow: 2px 2px 4px #000;
-  z-index: 20;
+  z-index: 30;
 }
 </style>
 </head>
@@ -210,10 +328,10 @@ body {
 
   <div id="road">
     <div class="road-line" style="top:0"></div>
-    <div class="road-line" style="top:170px"></div>
-    <div class="road-line" style="top:340px"></div>
-    <div class="road-line" style="top:510px"></div>
-    <div class="road-line" style="top:680px"></div>
+    <div class="road-line" style="top:180px"></div>
+    <div class="road-line" style="top:360px"></div>
+    <div class="road-line" style="top:540px"></div>
+    <div class="road-line" style="top:720px"></div>
   </div>
 
   <div class="building b1"></div>
@@ -221,18 +339,41 @@ body {
   <div class="building b3"></div>
   <div class="building b4"></div>
 
+  <!-- PLAYER -->
   <div id="player">
     <div class="head"></div>
+    <div class="hair"></div>
     <div class="body"></div>
+    <div class="leg left-leg"></div>
+    <div class="leg right-leg"></div>
+  </div>
+
+  <!-- RANGE ROVER VELAR STYLE CAR -->
+  <div id="velar">
+
+    <div class="velar-roof">
+      <div class="velar-window window1"></div>
+      <div class="velar-window window2"></div>
+    </div>
+
+    <div class="velar-body"></div>
+
+    <div class="wheel wheel1"></div>
+    <div class="wheel wheel2"></div>
+
   </div>
 
   <div id="hud">
-    <div class="hud-box">🇳🇬 ABUJA</div>
-    <div class="hud-box">💰 ₦25,000</div>
+    <div class="hud">🇳🇬 ABUJA</div>
+    <div class="hud">💰 ₦25,000</div>
   </div>
 
   <div id="title">
     AbujaLifestyle
+  </div>
+
+  <div id="status">
+    Walk to the Velar and press ACTION
   </div>
 
   <div id="joystick">
@@ -244,29 +385,67 @@ body {
 </div>
 
 <script>
+
 const player = document.getElementById("player");
-const joystick = document.getElementById("joystick");
+const velar = document.getElementById("velar");
 const stick = document.getElementById("stick");
+const joystick = document.getElementById("joystick");
+const action = document.getElementById("action");
+const statusText = document.getElementById("status");
 
-let x = 50;
-let y = 55;
+let playerX = 48;
+let playerY = 65;
 
+let carX = 65;
+let carY = 68;
+
+let driving = false;
 let dragging = false;
 
-function movePlayer(dx, dy) {
-  x += dx;
-  y += dy;
-
-  if (x < 3) x = 3;
-  if (x > 97) x = 97;
-
-  if (y < 42) y = 42;
-  if (y > 90) y = 90;
-
-  player.style.left = x + "%";
-  player.style.top = y + "%";
+function updatePlayer() {
+  player.style.left = playerX + "%";
+  player.style.top = playerY + "%";
 }
 
+function updateCar() {
+  velar.style.left = carX + "%";
+  velar.style.top = carY + "%";
+}
+
+updatePlayer();
+
+/* Move player */
+function move(dx, dy) {
+
+  if (driving) {
+
+    carX += dx * 0.9;
+    carY += dy * 0.9;
+
+    if (carX < 5) carX = 5;
+    if (carX > 90) carX = 90;
+
+    if (carY < 40) carY = 40;
+    if (carY > 88) carY = 88;
+
+    updateCar();
+
+    return;
+  }
+
+  playerX += dx;
+  playerY += dy;
+
+  if (playerX < 3) playerX = 3;
+  if (playerX > 94) playerX = 94;
+
+  if (playerY < 42) playerY = 42;
+  if (playerY > 90) playerY = 90;
+
+  updatePlayer();
+}
+
+/* Joystick */
 joystick.addEventListener("pointerdown", function(e) {
   dragging = true;
   joystick.setPointerCapture(e.pointerId);
@@ -295,27 +474,46 @@ joystick.addEventListener("pointermove", function(e) {
   stick.style.left = (30 + dx) + "px";
   stick.style.top = (30 + dy) + "px";
 
-  movePlayer(dx * 0.08, dy * 0.08);
+  move(dx * 0.08, dy * 0.08);
 });
 
 joystick.addEventListener("pointerup", function() {
+
   dragging = false;
 
   stick.style.left = "30px";
   stick.style.top = "30px";
 });
 
+/* Enter / exit */
+action.addEventListener("click", function() {
+
+  if (!driving) {
+
+    driving = true;
+
+    player.style.display = "none";
+    velar.style.display = "block";
+
+    statusText.textContent = "🚙 Driving the Velar";
+
+  } else {
+
+    driving = false;
+
+    player.style.display = "block";
+
+    playerX = carX;
+    playerY = carY + 7;
+
+    updatePlayer();
+
+    statusText.textContent = "Walk to the Velar and press ACTION";
+  }
+
+});
+
 </script>
 
 </body>
 </html>
-
-After pasting:
-
-Commit changes → use:
-
-"Add player movement"
-
-Then open your website → ENTER ABUJA.
-
-You should see the player, joystick, buildings, road and Abuja HUD. 🎮🇳🇬
