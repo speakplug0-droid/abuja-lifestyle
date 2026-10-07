@@ -6,9 +6,7 @@
 <title>AbujaLifestyle</title>
 
 <style>
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 html,body{
   margin:0;
@@ -30,31 +28,47 @@ canvas{
   position:fixed;
   top:12px;
   left:12px;
-  z-index:20;
+  z-index:50;
   padding:8px 12px;
   border-radius:10px;
   background:rgba(0,0,0,.55);
   color:white;
   font-size:13px;
-  backdrop-filter:blur(5px);
 }
 
 #title{
   position:fixed;
   top:12px;
   right:12px;
-  z-index:20;
+  z-index:50;
   color:white;
   font-weight:bold;
   font-size:16px;
   text-shadow:0 2px 5px #000;
 }
 
+#interaction{
+  display:none;
+  position:fixed;
+  left:50%;
+  bottom:185px;
+  transform:translateX(-50%);
+  z-index:60;
+  padding:13px 20px;
+  border:0;
+  border-radius:12px;
+  background:#e9b62f;
+  color:#111;
+  font-size:15px;
+  font-weight:bold;
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
+}
+
 #controls{
   position:fixed;
   left:20px;
   bottom:25px;
-  z-index:20;
+  z-index:50;
   width:190px;
   height:150px;
 }
@@ -81,36 +95,50 @@ canvas{
   transform:scale(.94);
 }
 
-#up{
-  left:66px;
-  top:0;
-}
+#up{left:66px;top:0}
+#down{left:66px;bottom:0}
+#left{left:0;top:66px}
+#right{right:0;top:66px}
 
-#down{
-  left:66px;
-  bottom:0;
-}
-
-#left{
-  left:0;
-  top:66px;
-}
-
-#right{
-  right:0;
-  top:66px;
+#exit{
+  display:none;
+  position:fixed;
+  right:20px;
+  bottom:30px;
+  z-index:60;
+  padding:14px 18px;
+  border:0;
+  border-radius:12px;
+  background:#c9342f;
+  color:white;
+  font-weight:bold;
+  font-size:14px;
 }
 
 #hint{
   position:fixed;
   bottom:18px;
   right:18px;
-  z-index:20;
+  z-index:50;
   color:white;
   background:rgba(0,0,0,.4);
   padding:8px 11px;
   border-radius:8px;
   font-size:11px;
+}
+
+#insideLabel{
+  display:none;
+  position:fixed;
+  top:55px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:50;
+  color:white;
+  background:rgba(0,0,0,.55);
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -120,12 +148,20 @@ canvas{
 <div id="online">Connecting...</div>
 <div id="title">ABUJA LIFESTYLE</div>
 
+<div id="insideLabel">MY HOUSE</div>
+
+<button id="interaction">
+ENTER HOUSE
+</button>
+
 <div id="controls">
   <div class="btn" id="up">▲</div>
   <div class="btn" id="down">▼</div>
   <div class="btn" id="left">◀</div>
   <div class="btn" id="right">▶</div>
 </div>
+
+<button id="exit">EXIT HOUSE</button>
 
 <div id="hint">Swipe to look around</div>
 
@@ -135,44 +171,54 @@ canvas{
 <script src="./car.js"></script>
 
 <script>
-const canvas = document.getElementById("game");
 
-const scene = new THREE.Scene();
+const canvas=document.getElementById("game");
 
-scene.background = new THREE.Color(0x8fc5ed);
+const scene=new THREE.Scene();
 
-scene.fog = new THREE.Fog(
+scene.background=new THREE.Color(0x8fc5ed);
+
+scene.fog=new THREE.Fog(
   0x8fc5ed,
   180,
   520
 );
 
-const camera = new THREE.PerspectiveCamera(
+const camera=new THREE.PerspectiveCamera(
   65,
-  innerWidth / innerHeight,
-  0.1,
+  innerWidth/innerHeight,
+  .1,
   1000
 );
 
-const renderer = new THREE.WebGLRenderer({
+const renderer=new THREE.WebGLRenderer({
   canvas,
   antialias:true,
   powerPreference:"high-performance"
 });
 
-renderer.setSize(innerWidth,innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
 
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio,1.5)
+);
 
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=
+  THREE.PCFSoftShadowMap;
+
+renderer.outputColorSpace=
+  THREE.SRGBColorSpace;
+
 
 /* =========================
-   LIGHTING
+   LIGHTS
 ========================= */
 
-const sun = new THREE.DirectionalLight(
+const sun=new THREE.DirectionalLight(
   0xffffff,
   2.2
 );
@@ -183,236 +229,109 @@ sun.position.set(
   80
 );
 
-sun.castShadow = true;
+sun.castShadow=true;
 
-sun.shadow.mapSize.width = 1024;
-sun.shadow.mapSize.height = 1024;
-
-sun.shadow.camera.left = -250;
-sun.shadow.camera.right = 250;
-sun.shadow.camera.top = 250;
-sun.shadow.camera.bottom = -250;
+sun.shadow.mapSize.width=1024;
+sun.shadow.mapSize.height=1024;
 
 scene.add(sun);
 
-const ambient = new THREE.HemisphereLight(
-  0xbfe3ff,
-  0x44552f,
-  1.3
+scene.add(
+  new THREE.HemisphereLight(
+    0xbfe3ff,
+    0x44552f,
+    1.3
+  )
 );
-
-scene.add(ambient);
 
 
 /* =========================
-   WORLD
+   MATERIALS
 ========================= */
 
-const worldSize = 500;
+function mat(color,rough=.8){
+  return new THREE.MeshStandardMaterial({
+    color,
+    roughness:rough
+  });
+}
 
-const grass = new THREE.Mesh(
-  new THREE.PlaneGeometry(
-    worldSize,
-    worldSize
-  ),
-  new THREE.MeshStandardMaterial({
-    color:0x4c8b43,
-    roughness:1
-  })
+const roadMat=mat(0x292929);
+const sidewalkMat=mat(0xb7b7b7);
+const whiteMat=mat(0xf3f3f3);
+const yellowMat=mat(0xf0c52f);
+
+
+/* =========================
+   WORLD GROUND
+========================= */
+
+const grass=new THREE.Mesh(
+  new THREE.PlaneGeometry(500,500),
+  mat(0x4c8b43)
 );
 
-grass.rotation.x = -Math.PI / 2;
-grass.receiveShadow = true;
+grass.rotation.x=-Math.PI/2;
+grass.receiveShadow=true;
 
 scene.add(grass);
 
 
 /* =========================
-   MATERIAL HELPERS
+   ROADS
 ========================= */
 
-function material(color){
-  return new THREE.MeshStandardMaterial({
-    color,
-    roughness:.8
-  });
-}
+function road(x,z,w,d){
 
-const roadMaterial = material(0x292929);
-const sidewalkMaterial = material(0xb7b7b7);
-const whiteMaterial = material(0xf3f3f3);
-const yellowMaterial = material(0xf0c52f);
-const redMaterial = material(0xb52a24);
-const greenMaterial = material(0x27853b);
-
-
-/* =========================
-   ROAD SYSTEM
-========================= */
-
-function createRoad(
-  x,
-  z,
-  width,
-  length,
-  rotation=0
-){
-
-  const road = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      width,
-      .08,
-      length
-    ),
-    roadMaterial
+  const r=new THREE.Mesh(
+    new THREE.BoxGeometry(w,.08,d),
+    roadMat
   );
 
-  road.position.set(
-    x,
-    .04,
-    z
-  );
+  r.position.set(x,.04,z);
+  r.receiveShadow=true;
 
-  road.rotation.y = rotation;
-
-  road.receiveShadow = true;
-
-  scene.add(road);
-
-  return road;
+  scene.add(r);
 }
 
+road(0,0,28,500);
+road(0,0,500,28);
 
-/* Main Abuja-style roads */
+road(-115,0,16,500);
+road(115,0,16,500);
 
-createRoad(0,0,28,500);
-createRoad(0,0,500,28);
-
-
-/* Secondary roads */
-
-createRoad(
-  -115,
-  0,
-  16,
-  500
-);
-
-createRoad(
-  115,
-  0,
-  16,
-  500
-);
-
-createRoad(
-  0,
-  -115,
-  500,
-  16
-);
-
-createRoad(
-  0,
-  115,
-  500,
-  16
-);
+road(0,-115,500,16);
+road(0,115,500,16);
 
 
 /* =========================
    ROAD MARKINGS
 ========================= */
 
-function laneLine(
-  x,
-  z,
-  w,
-  h,
-  d,
-  rotation=0,
-  color=whiteMaterial
-){
+function line(x,z,w,d,material){
 
-  const line = new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    color
+  const m=new THREE.Mesh(
+    new THREE.BoxGeometry(w,.025,d),
+    material
   );
 
-  line.position.set(x,.11,z);
-  line.rotation.y=rotation;
+  m.position.set(x,.11,z);
 
-  scene.add(line);
+  scene.add(m);
 }
-
-
-/* Central horizontal road */
 
 for(let x=-235;x<235;x+=24){
-  laneLine(
-    x,
-    0,
-    11,
-    .025,
-    .45
-  );
+  line(x,0,11,.45,whiteMat);
 }
-
-
-/* Central vertical road */
 
 for(let z=-235;z<235;z+=24){
-  laneLine(
-    0,
-    z,
-    .45,
-    .025,
-    11
-  );
+  line(0,z,.45,11,whiteMat);
 }
 
-
-/* Yellow road edges */
-
-laneLine(
-  0,
-  -12,
-  500,
-  .025,
-  .35,
-  0,
-  yellowMaterial
-);
-
-laneLine(
-  0,
-  12,
-  500,
-  .025,
-  .35,
-  0,
-  yellowMaterial
-);
-
-laneLine(
-  -12,
-  0,
-  .35,
-  .025,
-  500,
-  0,
-  yellowMaterial
-);
-
-laneLine(
-  12,
-  0,
-  .35,
-  .025,
-  500,
-  0,
-  yellowMaterial
-);
+line(0,-12,500,.35,yellowMat);
+line(0,12,500,.35,yellowMat);
+line(-12,0,.35,500,yellowMat);
+line(12,0,.35,500,yellowMat);
 
 
 /* =========================
@@ -421,35 +340,19 @@ laneLine(
 
 function sidewalk(x,z,w,d){
 
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      w,
-      .18,
-      d
-    ),
-    sidewalkMaterial
+  const s=new THREE.Mesh(
+    new THREE.BoxGeometry(w,.18,d),
+    sidewalkMat
   );
 
-  mesh.position.set(
-    x,
-    .09,
-    z
-  );
+  s.position.set(x,.09,z);
+  s.receiveShadow=true;
 
-  mesh.receiveShadow=true;
-
-  scene.add(mesh);
+  scene.add(s);
 }
-
-
-/* Horizontal sidewalks */
 
 sidewalk(0,-18,500,4);
 sidewalk(0,18,500,4);
-
-
-/* Vertical sidewalks */
-
 sidewalk(-18,0,4,500);
 sidewalk(18,0,4,500);
 
@@ -467,115 +370,93 @@ const buildingColors=[
   0xaeb9aa
 ];
 
-function createBuilding(
-  x,
-  z,
-  width,
-  depth,
-  height
+function building(
+  x,z,w,d,h
 ){
 
-  const color =
-    buildingColors[
-      Math.floor(
-        Math.random()*buildingColors.length
-      )
-    ];
-
-  const building = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      width,
-      height,
-      depth
-    ),
-    material(color)
+  const b=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    mat(
+      buildingColors[
+        Math.floor(
+          Math.random()*
+          buildingColors.length
+        )
+      ]
+    )
   );
 
-  building.position.set(
+  b.position.set(
     x,
-    height/2,
+    h/2,
     z
   );
 
-  building.castShadow=true;
-  building.receiveShadow=true;
+  b.castShadow=true;
+  b.receiveShadow=true;
 
-  scene.add(building);
+  scene.add(b);
 
-
-  /* roof */
-
-  const roof = new THREE.Mesh(
+  const roof=new THREE.Mesh(
     new THREE.BoxGeometry(
-      width+.5,
+      w+.5,
       .35,
-      depth+.5
+      d+.5
     ),
-    material(0x555555)
+    mat(0x555555)
   );
 
   roof.position.set(
     x,
-    height+.18,
+    h+.18,
     z
   );
 
   scene.add(roof);
 
+  const glass=mat(0x263b4a);
 
-  /* windows */
+  const rows=Math.max(
+    1,
+    Math.floor(h/4)
+  );
 
-  const windowMaterial =
-    material(0x263b4a);
+  const cols=Math.max(
+    1,
+    Math.floor(w/3)
+  );
 
-  const windowRows =
-    Math.max(
-      1,
-      Math.floor(height/4)
-    );
+  for(let r=0;r<rows;r++){
 
-  const windowCols =
-    Math.max(
-      1,
-      Math.floor(width/3)
-    );
+    for(let c=0;c<cols;c++){
 
-  for(let r=0;r<windowRows;r++){
+      const wx=
+        x-w/2+1.5+c*3;
 
-    for(let c=0;c<windowCols;c++){
+      const wy=
+        2.2+r*3.2;
 
-      const wx =
-        x -
-        width/2 +
-        1.5 +
-        c*3;
-
-      const wy =
-        2.2 +
-        r*3.2;
-
-      const front = new THREE.Mesh(
+      const window=new THREE.Mesh(
         new THREE.BoxGeometry(
           1.2,
           1.5,
           .08
         ),
-        windowMaterial
+        glass
       );
 
-      front.position.set(
+      window.position.set(
         wx,
         wy,
-        z-depth/2-.05
+        z-d/2-.05
       );
 
-      scene.add(front);
+      scene.add(window);
 
+      const back=window.clone();
 
-      const back = front.clone();
-
-      back.position.z =
-        z+depth/2+.05;
+      back.position.z=
+        z+d/2+.05;
 
       scene.add(back);
     }
@@ -583,9 +464,7 @@ function createBuilding(
 }
 
 
-/* City blocks */
-
-const blocks = [
+const blocks=[
   [-70,-70],
   [70,-70],
   [-70,70],
@@ -606,149 +485,19 @@ const blocks = [
 
 blocks.forEach(([x,z])=>{
 
-  const count =
-    2 + Math.floor(Math.random()*3);
+  const count=
+    2+Math.floor(Math.random()*3);
 
   for(let i=0;i<count;i++){
 
-    const bx =
-      x + (Math.random()-.5)*35;
-
-    const bz =
-      z + (Math.random()-.5)*35;
-
-    const width =
-      10 + Math.random()*12;
-
-    const depth =
-      10 + Math.random()*12;
-
-    const height =
-      8 + Math.random()*22;
-
-    createBuilding(
-      bx,
-      bz,
-      width,
-      depth,
-      height
+    building(
+      x+(Math.random()-.5)*35,
+      z+(Math.random()-.5)*35,
+      10+Math.random()*12,
+      10+Math.random()*12,
+      8+Math.random()*22
     );
   }
-});
-
-
-/* =========================
-   HOUSES / COMPOUNDS
-========================= */
-
-function createHouse(x,z){
-
-  const house = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      12,
-      4,
-      10
-    ),
-    material(0xe3d0ae)
-  );
-
-  house.position.set(
-    x,
-    2,
-    z
-  );
-
-  house.castShadow=true;
-  house.receiveShadow=true;
-
-  scene.add(house);
-
-
-  const roof = new THREE.Mesh(
-    new THREE.ConeGeometry(
-      9,
-      4,
-      4
-    ),
-    material(0x8d3b2f)
-  );
-
-  roof.position.set(
-    x,
-    6,
-    z
-  );
-
-  roof.rotation.y=Math.PI/4;
-
-  scene.add(roof);
-
-
-  /* compound wall */
-
-  const wallMaterial =
-    material(0xb8a995);
-
-  const wall1 = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      18,
-      2,
-      .4
-    ),
-    wallMaterial
-  );
-
-  wall1.position.set(
-    x,
-    1,
-    z+9
-  );
-
-  scene.add(wall1);
-
-
-  const wall2 = wall1.clone();
-
-  wall2.position.z=z-9;
-
-  scene.add(wall2);
-
-  const wall3 = new THREE.Mesh(
-    new THREE.BoxGeometry(
-      .4,
-      2,
-      18
-    ),
-    wallMaterial
-  );
-
-  wall3.position.set(
-    x+9,
-    1,
-    z
-  );
-
-  scene.add(wall3);
-
-  const wall4 = wall3.clone();
-
-  wall4.position.x=x-9;
-
-  scene.add(wall4);
-}
-
-
-[
-  [-220,-30],
-  [-220,35],
-  [220,-30],
-  [220,35],
-  [-35,-220],
-  [35,-220],
-  [-35,220],
-  [35,220]
-].forEach(p=>{
-  createHouse(p[0],p[1]);
 });
 
 
@@ -756,72 +505,37 @@ function createHouse(x,z){
    TREES
 ========================= */
 
-function createTree(x,z){
+function tree(x,z){
 
-  const trunk = new THREE.Mesh(
+  const trunk=new THREE.Mesh(
     new THREE.CylinderGeometry(
-      .35,
-      .5,
-      3,
-      8
+      .35,.5,3,8
     ),
-    material(0x70452b)
+    mat(0x70452b)
   );
 
-  trunk.position.set(
-    x,
-    1.5,
-    z
-  );
-
-  trunk.castShadow=true;
+  trunk.position.set(x,1.5,z);
 
   scene.add(trunk);
 
-
-  const crown = new THREE.Mesh(
+  const crown=new THREE.Mesh(
     new THREE.IcosahedronGeometry(
-      2.4,
-      1
+      2.4,1
     ),
-    material(0x267a35)
+    mat(0x267a35)
   );
 
-  crown.position.set(
-    x,
-    4,
-    z
-  );
-
-  crown.castShadow=true;
+  crown.position.set(x,4,z);
 
   scene.add(crown);
 }
 
-
-/* roadside greenery */
-
 for(let i=-230;i<=230;i+=28){
 
-  createTree(
-    -25,
-    i
-  );
-
-  createTree(
-    25,
-    i
-  );
-
-  createTree(
-    i,
-    -25
-  );
-
-  createTree(
-    i,
-    25
-  );
+  tree(-25,i);
+  tree(25,i);
+  tree(i,-25);
+  tree(i,25);
 }
 
 
@@ -829,34 +543,24 @@ for(let i=-230;i<=230;i+=28){
    STREET LIGHTS
 ========================= */
 
-function createStreetLight(x,z,rotation=0){
+function streetLight(x,z){
 
-  const pole = new THREE.Mesh(
+  const pole=new THREE.Mesh(
     new THREE.CylinderGeometry(
-      .12,
-      .18,
-      7,
-      8
+      .12,.18,7,8
     ),
-    material(0x333333)
+    mat(0x333333)
   );
 
-  pole.position.set(
-    x,
-    3.5,
-    z
-  );
+  pole.position.set(x,3.5,z);
 
   scene.add(pole);
 
-
-  const arm = new THREE.Mesh(
+  const arm=new THREE.Mesh(
     new THREE.BoxGeometry(
-      2,
-      .12,
-      .12
+      2,.12,.12
     ),
-    material(0x333333)
+    mat(0x333333)
   );
 
   arm.position.set(
@@ -865,606 +569,275 @@ function createStreetLight(x,z,rotation=0){
     z
   );
 
-  arm.rotation.y=rotation;
-
   scene.add(arm);
 
-
-  const lamp = new THREE.Mesh(
+  const lamp=new THREE.Mesh(
     new THREE.SphereGeometry(
-      .28,
-      8,
-      8
+      .28,8,8
     ),
-    material(0xffffcc)
+    mat(0xffffcc)
   );
 
   lamp.position.set(
-    x + Math.sin(rotation)*.9,
+    x+1,
     6.7,
-    z + Math.cos(rotation)*.9
+    z
   );
 
   scene.add(lamp);
-
-
-  const light = new THREE.PointLight(
-    0xfff1c4,
-    .35,
-    25
-  );
-
-  light.position.copy(lamp.position);
-
-  scene.add(light);
 }
-
 
 for(let i=-210;i<=210;i+=42){
 
-  createStreetLight(
-    -22,
-    i,
-    Math.PI/2
-  );
-
-  createStreetLight(
-    22,
-    i,
-    -Math.PI/2
-  );
+  streetLight(-22,i);
+  streetLight(22,i);
 }
 
 
-/* =========================
-   TRAFFIC LIGHTS
-========================= */
+/* =====================================================
+   FIRST ENTERABLE HOUSE
+===================================================== */
 
-function createTrafficLight(x,z){
+const house={
+  x:55,
+  z:35,
+  doorX:55,
+  doorZ:29
+};
 
-  const pole = new THREE.Mesh(
-    new THREE.CylinderGeometry(
-      .14,
-      .14,
-      5,
-      8
-    ),
-    material(0x222222)
-  );
 
-  pole.position.set(
-    x,
+/* driveway */
+
+const driveway=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    8,.12,14
+  ),
+  mat(0x777777)
+);
+
+driveway.position.set(
+  house.x,
+  .06,
+  house.z-10
+);
+
+scene.add(driveway);
+
+
+/* house body */
+
+const houseBody=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    18,
+    7,
+    14
+  ),
+  mat(0xd8c09c)
+);
+
+houseBody.position.set(
+  house.x,
+  3.5,
+  house.z
+);
+
+houseBody.castShadow=true;
+houseBody.receiveShadow=true;
+
+scene.add(houseBody);
+
+
+/* roof */
+
+const roof=new THREE.Mesh(
+  new THREE.ConeGeometry(
+    13,
+    5,
+    4
+  ),
+  mat(0x873a2e)
+);
+
+roof.position.set(
+  house.x,
+  9,
+  house.z
+);
+
+roof.rotation.y=Math.PI/4;
+
+scene.add(roof);
+
+
+/* front door */
+
+const door=new THREE.Mesh(
+  new THREE.BoxGeometry(
     2.5,
-    z
-  );
+    4,
+    .25
+  ),
+  mat(0x563a25)
+);
 
-  scene.add(pole);
+door.position.set(
+  house.doorX,
+  2,
+  house.doorZ-7.1
+);
+
+scene.add(door);
 
 
-  const box = new THREE.Mesh(
+/* door frame */
+
+const frameMat=mat(0xffffff);
+
+const frameTop=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    3.1,.25,.3
+  ),
+  frameMat
+);
+
+frameTop.position.set(
+  house.doorX,
+  4.15,
+  house.doorZ-7.25
+);
+
+scene.add(frameTop);
+
+
+/* front windows */
+
+function houseWindow(x,z){
+
+  const w=new THREE.Mesh(
     new THREE.BoxGeometry(
-      .7,
-      1.8,
-      .7
+      3.2,
+      2.3,
+      .15
     ),
-    material(0x171717)
+    mat(0x29475a,.25)
   );
 
-  box.position.set(
+  w.position.set(
     x,
-    4.4,
+    3.4,
     z
   );
 
-  scene.add(box);
-
-
-  const colors=[
-    0xff2222,
-    0xffcc22,
-    0x22dd44
-  ];
-
-  colors.forEach((c,i)=>{
-
-    const lamp = new THREE.Mesh(
-      new THREE.SphereGeometry(
-        .18,
-        8,
-        8
-      ),
-      material(c)
-    );
-
-    lamp.position.set(
-      x,
-      4.95-i*.55,
-      z-.38
-    );
-
-    scene.add(lamp);
-  });
+  scene.add(w);
 }
 
-
-/* traffic lights around main intersection */
-
-createTrafficLight(-16,-16);
-createTrafficLight(16,16);
-createTrafficLight(-16,16);
-createTrafficLight(16,-16);
+houseWindow(48,27.9);
+houseWindow(62,27.9);
 
 
-/* =========================
-   PLAYER CAR
-========================= */
+/* compound walls */
 
-const car = new Car(
-  scene,
-  0,
-  35
+const wallMat=mat(0xb8a995);
+
+const wallA=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    26,2,.4
+  ),
+  wallMat
 );
 
-
-/* =========================
-   CONTROLS
-========================= */
-
-const keys={};
-
-window.addEventListener(
-  "keydown",
-  e=>{
-    keys[e.key.toLowerCase()]=true;
-  }
+wallA.position.set(
+  house.x,
+  1,
+  house.z+10
 );
 
-window.addEventListener(
-  "keyup",
-  e=>{
-    keys[e.key.toLowerCase()]=false;
-  }
+scene.add(wallA);
+
+
+const wallB=wallA.clone();
+
+wallB.position.z=
+  house.z-14;
+
+scene.add(wallB);
+
+
+const wallC=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    .4,2,24
+  ),
+  wallMat
 );
 
-
-/* Mobile controls */
-
-function bindButton(id,key){
-
-  const button =
-    document.getElementById(id);
-
-  const start=e=>{
-    e.preventDefault();
-    keys[key]=true;
-  };
-
-  const end=e=>{
-    e.preventDefault();
-    keys[key]=false;
-  };
-
-  button.addEventListener(
-    "touchstart",
-    start,
-    {passive:false}
-  );
-
-  button.addEventListener(
-    "touchend",
-    end,
-    {passive:false}
-  );
-
-  button.addEventListener(
-    "touchcancel",
-    end,
-    {passive:false}
-  );
-
-  button.addEventListener(
-    "mousedown",
-    start
-  );
-
-  button.addEventListener(
-    "mouseup",
-    end
-  );
-
-  button.addEventListener(
-    "mouseleave",
-    end
-  );
-}
-
-bindButton("up","w");
-bindButton("down","s");
-bindButton("left","a");
-bindButton("right","d");
-
-
-/* =========================
-   CAMERA
-========================= */
-
-let cameraDistance=11;
-let cameraPitch=.45;
-let cameraOrbit=0;
-
-const behindAngle=Math.PI;
-
-let dragging=false;
-let lastX=0;
-let lastY=0;
-
-canvas.addEventListener(
-  "pointerdown",
-  e=>{
-    dragging=true;
-    lastX=e.clientX;
-    lastY=e.clientY;
-    canvas.setPointerCapture(e.pointerId);
-  }
+wallC.position.set(
+  house.x+13,
+  1,
+  house.z-2
 );
 
-canvas.addEventListener(
-  "pointermove",
-  e=>{
+scene.add(wallC);
 
-    if(!dragging)return;
 
-    const dx=e.clientX-lastX;
-    const dy=e.clientY-lastY;
+const wallD=wallC.clone();
 
-    cameraOrbit-=dx*.006;
+wallD.position.x=
+  house.x-13;
 
-    cameraPitch+=dy*.004;
+scene.add(wallD);
 
-    cameraPitch=
-      THREE.MathUtils.clamp(
-        cameraPitch,
-        .15,
-        1.1
-      );
 
-    lastX=e.clientX;
-    lastY=e.clientY;
-  }
-);
+/* gate posts */
 
-canvas.addEventListener(
-  "pointerup",
-  ()=>{
-    dragging=false;
-  }
-);
+function gatePost(x){
 
-canvas.addEventListener(
-  "pointercancel",
-  ()=>{
-    dragging=false;
-  }
-);
-
-
-/* =========================
-   MULTIPLAYER
-========================= */
-
-const online =
-  document.getElementById("online");
-
-let socket=null;
-let myId=null;
-
-const otherPlayers={};
-
-function connectMultiplayer(){
-
-  const protocol =
-    location.protocol==="https:"
-      ? "wss:"
-      : "ws:";
-
-  try{
-
-    socket=new WebSocket(
-      protocol+"//"+location.host
-    );
-
-    socket.onopen=()=>{
-      online.textContent=
-        "Online • Connected";
-    };
-
-    socket.onclose=()=>{
-      online.textContent=
-        "Multiplayer offline";
-    };
-
-    socket.onerror=()=>{
-      online.textContent=
-        "Multiplayer offline";
-    };
-
-    socket.onmessage=e=>{
-
-      try{
-
-        const data=
-          JSON.parse(e.data);
-
-        if(data.type==="welcome"){
-
-          myId=data.id;
-
-        }
-
-        if(data.type==="players"){
-
-          const list=
-            data.players || {};
-
-          const count=
-            Object.keys(list).length;
-
-          online.textContent=
-            "Online players: "+count;
-
-          for(const id in list){
-
-            if(id===myId)continue;
-
-            const p=list[id];
-
-            if(!otherPlayers[id]){
-
-              const group=
-                new THREE.Group();
-
-              const body=
-                new THREE.Mesh(
-                  new THREE.BoxGeometry(
-                    2.1,
-                    .7,
-                    4
-                  ),
-                  material(0x2455aa)
-                );
-
-              body.position.y=.55;
-
-              group.add(body);
-
-              const roof=
-                new THREE.Mesh(
-                  new THREE.BoxGeometry(
-                    1.7,
-                    .6,
-                    1.8
-                  ),
-                  material(0x151515)
-                );
-
-              roof.position.y=1.1;
-
-              group.add(roof);
-
-              group.position.set(
-                p.x,
-                p.y,
-                p.z
-              );
-
-              scene.add(group);
-
-              otherPlayers[id]={
-                group,
-                targetX:p.x,
-                targetY:p.y,
-                targetZ:p.z,
-                targetRotation:p.rotation||0
-              };
-            }
-
-            const other=
-              otherPlayers[id];
-
-            other.targetX=p.x;
-            other.targetY=p.y;
-            other.targetZ=p.z;
-            other.targetRotation=
-              p.rotation||0;
-          }
-
-
-          for(const id in otherPlayers){
-
-            if(!list[id]){
-
-              scene.remove(
-                otherPlayers[id].group
-              );
-
-              delete otherPlayers[id];
-            }
-          }
-        }
-
-      }catch(error){
-        console.log(error);
-      }
-    };
-
-  }catch(error){
-
-    online.textContent=
-      "Multiplayer offline";
-
-  }
-}
-
-connectMultiplayer();
-
-
-/* =========================
-   ANIMATION
-========================= */
-
-const clock=new THREE.Clock();
-
-function animate(){
-
-  requestAnimationFrame(animate);
-
-  const delta=
-    Math.min(
-      clock.getDelta(),
-      .05
-    );
-
-
-  /* Drive */
-
-  car.update(keys);
-
-
-  /* Send player position */
-
-  if(
-    socket &&
-    socket.readyState===WebSocket.OPEN
-  ){
-
-    socket.send(
-      JSON.stringify({
-        type:"position",
-        x:car.group.position.x,
-        y:car.group.position.y,
-        z:car.group.position.z,
-        rotation:car.group.rotation.y
-      })
-    );
-  }
-
-
-  /* Other players */
-
-  for(const id in otherPlayers){
-
-    const p=
-      otherPlayers[id];
-
-    p.group.position.x=
-      THREE.MathUtils.lerp(
-        p.group.position.x,
-        p.targetX,
-        .18
-      );
-
-    p.group.position.y=
-      THREE.MathUtils.lerp(
-        p.group.position.y,
-        p.targetY,
-        .18
-      );
-
-    p.group.position.z=
-      THREE.MathUtils.lerp(
-        p.group.position.z,
-        p.targetZ,
-        .18
-      );
-
-    p.group.rotation.y=
-      THREE.MathUtils.lerp(
-        p.group.rotation.y,
-        p.targetRotation,
-        .18
-      );
-  }
-
-
-  /* Camera */
-
-  const carPos=
-    car.group.position;
-
-  const angle=
-    car.group.rotation.y+
-    cameraOrbit+
-    behindAngle;
-
-  const horizontal=
-    Math.cos(cameraPitch)*
-    cameraDistance;
-
-  const targetX=
-    carPos.x+
-    Math.sin(angle)*
-    horizontal;
-
-  const targetZ=
-    carPos.z+
-    Math.cos(angle)*
-    horizontal;
-
-  const targetY=
-    carPos.y+
-    3+
-    Math.sin(cameraPitch)*
-    cameraDistance;
-
-
-  camera.position.lerp(
-    new THREE.Vector3(
-      targetX,
-      targetY,
-      targetZ
+  const p=new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .6,2.7,.6
     ),
-    .12
+    mat(0x777777)
   );
 
-  const lookAt=
-    new THREE.Vector3(
-      carPos.x,
-      carPos.y+1,
-      carPos.z
-    );
-
-  camera.lookAt(lookAt);
-
-
-  renderer.render(
-    scene,
-    camera
+  p.position.set(
+    x,
+    1.35,
+    house.z-14
   );
+
+  scene.add(p);
 }
 
-animate();
+gatePost(house.x-4);
+gatePost(house.x+4);
+
+
+/* house sign */
+
+const sign=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    5,.9,.15
+  ),
+  mat(0x253c2c)
+);
+
+sign.position.set(
+  house.x,
+  6.3,
+  house.z-7.2
+);
+
+scene.add(sign);
 
 
 /* =========================
-   RESIZE
+   HOUSE INTERIOR
 ========================= */
 
-window.addEventListener(
-  "resize",
-  ()=>{
+const interior=
+  new THREE.Group();
 
-    camera.aspect=
-      innerWidth/innerHeight;
+scene.add(interior);
 
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-      innerWidth,
-      innerHeight
-    );
-  }
-);
-</script>
-
-</body>
-</html>
+const interiorFloor=new THREE.Mesh(
+  new THREE.BoxGeometry(
+    18,.2,14
