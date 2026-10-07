@@ -1,11 +1,30 @@
 const http = require("http");
+const fs = require("fs");
+const path = require("path");
 const WebSocket = require("ws");
 
 const PORT = process.env.PORT || 3000;
 
 const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("AbujaLifestyle multiplayer server is online!");
+  if (req.url === "/" || req.url === "/index.html") {
+    const filePath = path.join(__dirname, "index.html");
+
+    fs.readFile(filePath, (error, data) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "text/plain" });
+        res.end("AbujaLifestyle game is loading...");
+        return;
+      }
+
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
+
+    return;
+  }
+
+  res.writeHead(404, { "Content-Type": "text/plain" });
+  res.end("Not found");
 });
 
 const wss = new WebSocket.Server({ server });
