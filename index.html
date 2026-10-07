@@ -9,113 +9,69 @@
 *{box-sizing:border-box}
 html,body{
   margin:0;width:100%;height:100%;overflow:hidden;
-  background:#8fc5ed;
-  font-family:Arial,sans-serif;
-  touch-action:none;
+  background:#8fc5ed;font-family:Arial,sans-serif;
+  touch-action:none
 }
 canvas{display:block;width:100%;height:100%}
 
-#online,#title,#insideLabel,#hint,#interaction,#exit,#controls{
-  position:fixed;
-  z-index:50;
+#online,#title,#hint,#insideLabel{
+  position:fixed;z-index:50;color:white
 }
-
 #online{
-  top:12px;left:12px;
-  padding:8px 12px;
-  border-radius:10px;
-  background:rgba(0,0,0,.55);
-  color:white;
-  font-size:13px;
+  top:12px;left:12px;padding:8px 12px;border-radius:10px;
+  background:rgba(0,120,40,.75);font-size:13px
 }
-
 #title{
-  top:12px;right:12px;
-  color:white;
-  font-weight:bold;
-  font-size:16px;
-  text-shadow:0 2px 5px #000;
+  top:12px;right:12px;font-size:16px;font-weight:bold;
+  text-shadow:0 2px 5px #000
+}
+#insideLabel{
+  display:none;top:55px;left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.65);padding:8px 15px;border-radius:10px;
+  font-weight:bold
+}
+#hint{
+  bottom:18px;right:18px;background:rgba(0,0,0,.45);
+  padding:8px 11px;border-radius:8px;font-size:11px
 }
 
-#insideLabel{
-  display:none;
-  top:55px;left:50%;
-  transform:translateX(-50%);
-  color:white;
-  background:rgba(0,0,0,.6);
-  padding:8px 14px;
-  border-radius:10px;
-  font-weight:bold;
-}
+button{font-family:Arial}
 
 #interaction{
-  display:none;
-  left:50%;bottom:185px;
-  transform:translateX(-50%);
-  padding:13px 20px;
-  border:0;border-radius:12px;
-  background:#e9b62f;
-  color:#111;
-  font-size:15px;
-  font-weight:bold;
+  display:none;position:fixed;z-index:60;
+  left:50%;bottom:185px;transform:translateX(-50%);
+  padding:14px 22px;border:0;border-radius:12px;
+  background:#e9b62f;color:#111;font-weight:bold;font-size:15px
 }
-
 #exit{
-  display:none;
-  right:20px;bottom:30px;
-  padding:14px 18px;
-  border:0;border-radius:12px;
-  background:#c9342f;
-  color:white;
-  font-weight:bold;
-}
-
-#hint{
-  bottom:18px;right:18px;
-  color:white;
-  background:rgba(0,0,0,.4);
-  padding:8px 11px;
-  border-radius:8px;
-  font-size:11px;
+  display:none;position:fixed;z-index:60;
+  right:20px;bottom:30px;padding:14px 20px;
+  border:0;border-radius:12px;background:#c9342f;
+  color:white;font-weight:bold
 }
 
 #controls{
-  left:20px;bottom:25px;
-  width:190px;height:150px;
+  position:fixed;left:20px;bottom:25px;
+  z-index:50;width:190px;height:150px
 }
-
 .btn{
-  position:absolute;
-  width:58px;height:58px;
-  border:1px solid rgba(255,255,255,.3);
-  border-radius:16px;
-  background:rgba(0,0,0,.5);
-  color:white;
-  font-size:25px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  user-select:none;
-  -webkit-user-select:none;
+  position:absolute;width:58px;height:58px;
+  border-radius:16px;border:1px solid rgba(255,255,255,.3);
+  background:rgba(0,0,0,.5);color:white;font-size:25px;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none
 }
-
 #up{left:66px;top:0}
 #down{left:66px;bottom:0}
 #left{left:0;top:66px}
 #right{right:0;top:66px}
-
-.btn:active{
-  background:rgba(255,255,255,.3);
-  transform:scale(.94);
-}
 </style>
 </head>
 
 <body>
 
-<div id="online">Starting game...</div>
+<div id="online">STARTING...</div>
 <div id="title">ABUJA LIFESTYLE</div>
-
 <div id="insideLabel">MY HOUSE</div>
 
 <button id="interaction">ENTER HOUSE</button>
@@ -136,76 +92,27 @@ canvas{display:block;width:100%;height:100%}
 <script src="./car.js"></script>
 
 <script>
-
-/* =====================================================
-   ERROR DISPLAY
-===================================================== */
-
-function showError(message){
-  const box=document.getElementById("online");
-  box.textContent="GAME ERROR: "+message;
-  box.style.background="#c62828";
-  box.style.maxWidth="90vw";
-  console.error(message);
-}
-
-window.addEventListener("error",function(e){
-  showError(e.message || "Unknown error");
+window.addEventListener("error",e=>{
+  const x=document.getElementById("online");
+  x.textContent="GAME ERROR: "+e.message;
+  x.style.background="#c62828";
 });
-
-window.addEventListener("unhandledrejection",function(e){
-  showError(
-    e.reason && e.reason.message
-      ? e.reason.message
-      : String(e.reason)
-  );
-});
-
-
-/* =====================================================
-   START
-===================================================== */
 
 try{
 
-if(typeof THREE==="undefined"){
-  throw new Error("Three.js failed to load");
-}
-
-if(typeof Car==="undefined"){
-  throw new Error("car.js failed to load");
-}
+if(typeof THREE==="undefined")throw new Error("Three.js failed to load");
+if(typeof Car==="undefined")throw new Error("car.js failed to load");
 
 const canvas=document.getElementById("game");
+const online=document.getElementById("online");
 
 const scene=new THREE.Scene();
-
 scene.background=new THREE.Color(0x8fc5ed);
-
-scene.fog=new THREE.Fog(
-  0x8fc5ed,
-  180,
-  600
-);
-
-
-/* =====================================================
-   CAMERA
-===================================================== */
+scene.fog=new THREE.Fog(0x8fc5ed,180,600);
 
 const camera=new THREE.PerspectiveCamera(
-  65,
-  innerWidth/innerHeight,
-  .1,
-  1000
+  65,innerWidth/innerHeight,.1,1000
 );
-
-camera.position.set(0,7,12);
-
-
-/* =====================================================
-   RENDERER
-===================================================== */
 
 const renderer=new THREE.WebGLRenderer({
   canvas:canvas,
@@ -214,184 +121,130 @@ const renderer=new THREE.WebGLRenderer({
 });
 
 renderer.setSize(innerWidth,innerHeight);
-
-renderer.setPixelRatio(
-  Math.min(window.devicePixelRatio || 1,1.5)
-);
-
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 
-if("SRGBColorSpace" in THREE){
+if(THREE.SRGBColorSpace)
   renderer.outputColorSpace=THREE.SRGBColorSpace;
-}
 
 
-/* =====================================================
-   LIGHTING
-===================================================== */
+/* LIGHT */
 
-const sun=new THREE.DirectionalLight(
-  0xffffff,
-  2.2
-);
-
+const sun=new THREE.DirectionalLight(0xffffff,2.2);
 sun.position.set(120,180,80);
 sun.castShadow=true;
-
 sun.shadow.mapSize.width=1024;
 sun.shadow.mapSize.height=1024;
-
 scene.add(sun);
 
-scene.add(
-  new THREE.HemisphereLight(
-    0xbfe3ff,
-    0x44552f,
-    1.4
-  )
-);
+scene.add(new THREE.HemisphereLight(
+  0xbfe3ff,0x44552f,1.4
+));
 
 
-/* =====================================================
-   MATERIAL HELPER
-===================================================== */
+/* MATERIAL */
 
-function mat(color,rough=.8){
+function mat(c,r=.8){
   return new THREE.MeshStandardMaterial({
-    color:color,
-    roughness:rough
+    color:c,
+    roughness:r
   });
 }
 
-const grassMat=mat(0x4c8b43);
-const roadMat=mat(0x292929);
-const sidewalkMat=mat(0xb7b7b7);
-const whiteMat=mat(0xf3f3f3);
-const yellowMat=mat(0xf0c52f);
 
+/* GROUND */
 
-/* =====================================================
-   GROUND
-===================================================== */
-
-const grass=new THREE.Mesh(
+const ground=new THREE.Mesh(
   new THREE.PlaneGeometry(600,600),
-  grassMat
+  mat(0x4c8b43)
 );
 
-grass.rotation.x=-Math.PI/2;
-grass.receiveShadow=true;
+ground.rotation.x=-Math.PI/2;
+ground.receiveShadow=true;
+scene.add(ground);
 
-scene.add(grass);
 
+/* ROADS */
 
-/* =====================================================
-   ROADS
-===================================================== */
+const roadMat=mat(0x292929);
 
-function makeRoad(x,z,w,d){
-
+function road(x,z,w,d){
   const r=new THREE.Mesh(
     new THREE.BoxGeometry(w,.08,d),
     roadMat
   );
-
   r.position.set(x,.04,z);
   r.receiveShadow=true;
-
   scene.add(r);
 }
 
-makeRoad(0,0,30,600);
-makeRoad(0,0,600,30);
-
-makeRoad(-120,0,16,600);
-makeRoad(120,0,16,600);
-
-makeRoad(0,-120,600,16);
-makeRoad(0,120,600,16);
+road(0,0,30,600);
+road(0,0,600,30);
+road(-120,0,16,600);
+road(120,0,16,600);
+road(0,-120,600,16);
+road(0,120,600,16);
 
 
-/* =====================================================
-   ROAD LINES
-===================================================== */
+/* ROAD MARKINGS */
 
-function makeLine(x,z,w,d,material){
+const white=mat(0xf3f3f3);
 
-  const m=new THREE.Mesh(
-    new THREE.BoxGeometry(w,.025,d),
-    material
+for(let i=-285;i<285;i+=24){
+
+  const a=new THREE.Mesh(
+    new THREE.BoxGeometry(10,.025,.4),white
   );
+  a.position.set(i,.11,0);
+  scene.add(a);
 
-  m.position.set(x,.11,z);
-  scene.add(m);
-}
-
-for(let x=-285;x<285;x+=24){
-  makeLine(x,0,10,.4,whiteMat);
-}
-
-for(let z=-285;z<285;z+=24){
-  makeLine(0,z,.4,10,whiteMat);
+  const b=new THREE.Mesh(
+    new THREE.BoxGeometry(.4,.025,10),white
+  );
+  b.position.set(0,.11,i);
+  scene.add(b);
 }
 
 
-/* =====================================================
-   SIDEWALKS
-===================================================== */
+/* SIDEWALKS */
 
-function makeSidewalk(x,z,w,d){
+const sidewalk=mat(0xb7b7b7);
 
+function walk(x,z,w,d){
   const s=new THREE.Mesh(
-    new THREE.BoxGeometry(w,.18,d),
-    sidewalkMat
+    new THREE.BoxGeometry(w,.18,d),sidewalk
   );
-
   s.position.set(x,.09,z);
-  s.receiveShadow=true;
-
   scene.add(s);
 }
 
-makeSidewalk(0,-18,600,4);
-makeSidewalk(0,18,600,4);
-makeSidewalk(-18,0,4,600);
-makeSidewalk(18,0,4,600);
+walk(0,-18,600,4);
+walk(0,18,600,4);
+walk(-18,0,4,600);
+walk(18,0,4,600);
 
 
-/* =====================================================
-   BUILDINGS
-===================================================== */
+/* BUILDINGS */
 
 const buildingColors=[
-  0xd8c5a8,
-  0xc6c6c6,
-  0xe1d3ba,
-  0xb8c1c8,
-  0xd1b08a,
-  0xaeb9aa
+  0xd8c5a8,0xc6c6c6,0xe1d3ba,
+  0xb8c1c8,0xd1b08a,0xaeb9aa
 ];
 
 function building(x,z,w,d,h){
 
-  const body=new THREE.Mesh(
+  const b=new THREE.Mesh(
     new THREE.BoxGeometry(w,h,d),
-    mat(
-      buildingColors[
-        Math.floor(
-          Math.random()*buildingColors.length
-        )
-      ]
-    )
+    mat(buildingColors[
+      Math.floor(Math.random()*buildingColors.length)
+    ])
   );
 
-  body.position.set(x,h/2,z);
-  body.castShadow=true;
-  body.receiveShadow=true;
-
-  scene.add(body);
-
+  b.position.set(x,h/2,z);
+  b.castShadow=true;
+  b.receiveShadow=true;
+  scene.add(b);
 
   const roof=new THREE.Mesh(
     new THREE.BoxGeometry(w+.5,.35,d+.5),
@@ -399,70 +252,45 @@ function building(x,z,w,d,h){
   );
 
   roof.position.set(x,h+.18,z);
-
   scene.add(roof);
-
 
   const glass=mat(0x263b4a,.25);
 
-  const rows=Math.max(1,Math.floor(h/4));
-  const cols=Math.max(1,Math.floor(w/3));
+  for(let r=0;r<Math.floor(h/4);r++){
+    for(let c=0;c<Math.floor(w/3);c++){
 
-  for(let r=0;r<rows;r++){
-
-    for(let c=0;c<cols;c++){
-
-      const wx=x-w/2+1.5+c*3;
-      const wy=2.2+r*3.2;
-
-      if(wy>h-1) continue;
-
-      const window=new THREE.Mesh(
+      const win=new THREE.Mesh(
         new THREE.BoxGeometry(1.2,1.5,.08),
         glass
       );
 
-      window.position.set(
-        wx,
-        wy,
+      win.position.set(
+        x-w/2+1.5+c*3,
+        2.2+r*3.2,
         z-d/2-.05
       );
 
-      scene.add(window);
+      scene.add(win);
 
-      const back=window.clone();
-
+      const back=win.clone();
       back.position.z=z+d/2+.05;
-
       scene.add(back);
     }
   }
 }
 
-
-/* City blocks */
-
-const blocks=[
-  [-70,-70],[70,-70],
-  [-70,70],[70,70],
-  [-180,-70],[180,-70],
-  [-180,70],[180,70],
-  [-70,-180],[70,-180],
-  [-70,180],[70,180],
-  [-180,-180],[180,-180],
-  [-180,180],[180,180]
-];
-
-blocks.forEach(function(block){
-
-  const x=block[0];
-  const z=block[1];
+[
+ [-70,-70],[70,-70],[-70,70],[70,70],
+ [-180,-70],[180,-70],[-180,70],[180,70],
+ [-70,-180],[70,-180],[-70,180],[70,180],
+ [-180,-180],[180,-180],[-180,180],[180,180]
+].forEach(p=>{
 
   for(let i=0;i<3;i++){
 
     building(
-      x+(Math.random()-.5)*30,
-      z+(Math.random()-.5)*30,
+      p[0]+(Math.random()-.5)*30,
+      p[1]+(Math.random()-.5)*30,
       10+Math.random()*12,
       10+Math.random()*12,
       8+Math.random()*22
@@ -471,11 +299,9 @@ blocks.forEach(function(block){
 });
 
 
-/* =====================================================
-   TREES
-===================================================== */
+/* TREES */
 
-function makeTree(x,z){
+function tree(x,z){
 
   const trunk=new THREE.Mesh(
     new THREE.CylinderGeometry(.35,.5,3,8),
@@ -483,9 +309,7 @@ function makeTree(x,z){
   );
 
   trunk.position.set(x,1.5,z);
-
   scene.add(trunk);
-
 
   const crown=new THREE.Mesh(
     new THREE.IcosahedronGeometry(2.4,1),
@@ -493,399 +317,125 @@ function makeTree(x,z){
   );
 
   crown.position.set(x,4,z);
-
   scene.add(crown);
 }
 
 for(let i=-270;i<=270;i+=35){
-
-  makeTree(-28,i);
-  makeTree(28,i);
-  makeTree(i,-28);
-  makeTree(i,28);
+  tree(-28,i);
+  tree(28,i);
+  tree(i,-28);
+  tree(i,28);
 }
 
 
-/* =====================================================
-   STREET LIGHTS
-===================================================== */
-
-function makeStreetLight(x,z){
-
-  const pole=new THREE.Mesh(
-    new THREE.CylinderGeometry(.12,.18,7,8),
-    mat(0x333333)
-  );
-
-  pole.position.set(x,3.5,z);
-
-  scene.add(pole);
-
-
-  const arm=new THREE.Mesh(
-    new THREE.BoxGeometry(2,.12,.12),
-    mat(0x333333)
-  );
-
-  arm.position.set(x+1,6.8,z);
-
-  scene.add(arm);
-
-
-  const lamp=new THREE.Mesh(
-    new THREE.SphereGeometry(.28,8,8),
-    mat(0xffffcc)
-  );
-
-  lamp.position.set(x+1,6.7,z);
-
-  scene.add(lamp);
-}
-
-for(let i=-245;i<=245;i+=45){
-
-  makeStreetLight(-22,i);
-  makeStreetLight(22,i);
-}
-
-
-/* =====================================================
-   MY HOUSE
-===================================================== */
+/* ================================
+   HOUSE
+================================ */
 
 const house={
   x:55,
-  z:35,
-  doorZ:28
+  z:35
 };
 
-const houseGroup=new THREE.Group();
+const exterior=new THREE.Group();
+scene.add(exterior);
 
-scene.add(houseGroup);
+const interior=new THREE.Group();
+interior.visible=false;
+scene.add(interior);
 
 
-/* House floor */
+/* DRIVEWAY */
 
-const houseFloor=new THREE.Mesh(
-  new THREE.BoxGeometry(18,.2,14),
-  mat(0xc5a77c)
+const driveway=new THREE.Mesh(
+  new THREE.BoxGeometry(9,.12,15),
+  mat(0x777777)
 );
 
-houseFloor.position.set(
-  house.x,
-  .1,
-  house.z
+driveway.position.set(house.x,.06,house.z-10);
+exterior.add(driveway);
+
+
+/* HOUSE EXTERIOR */
+
+const houseBody=new THREE.Mesh(
+  new THREE.BoxGeometry(18,7,14),
+  mat(0xd8c09c)
 );
 
-houseFloor.receiveShadow=true;
-
-houseGroup.add(houseFloor);
-
-
-/* House walls */
-
-const houseWallMat=mat(0xd8c09c);
-
-function houseWall(x,y,z,w,h,d){
-
-  const wall=new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    houseWallMat
-  );
-
-  wall.position.set(x,y,z);
-  wall.castShadow=true;
-  wall.receiveShadow=true;
-
-  houseGroup.add(wall);
-
-  return wall;
-}
+houseBody.position.set(house.x,3.5,house.z);
+houseBody.castShadow=true;
+exterior.add(houseBody);
 
 
-/* Back wall */
+/* ROOF */
 
-houseWall(
-  house.x,
-  3.5,
-  house.z+6.8,
-  18,
-  7,
-  .4
-);
-
-
-/* Left wall */
-
-houseWall(
-  house.x-8.8,
-  3.5,
-  house.z,
-  .4,
-  7,
-  14
-);
-
-
-/* Right wall */
-
-houseWall(
-  house.x+8.8,
-  3.5,
-  house.z,
-  .4,
-  7,
-  14
-);
-
-
-/* Front wall pieces - door opening */
-
-houseWall(
-  house.x-6.5,
-  3.5,
-  house.z-6.8,
-  5,
-  7,
-  .4
-);
-
-houseWall(
-  house.x+6.5,
-  3.5,
-  house.z-6.8,
-  5,
-  7,
-  .4
-);
-
-houseWall(
-  house.x,
-  5.8,
-  house.z-6.8,
-  8,
-  2.4,
-  .4
-);
-
-
-/* Roof */
-
-const houseRoof=new THREE.Mesh(
+const roof=new THREE.Mesh(
   new THREE.ConeGeometry(13,5,4),
   mat(0x873a2e)
 );
 
-houseRoof.position.set(
-  house.x,
-  9,
-  house.z
-);
-
-houseRoof.rotation.y=Math.PI/4;
-
-houseGroup.add(houseRoof);
+roof.position.set(house.x,9,house.z);
+roof.rotation.y=Math.PI/4;
+exterior.add(roof);
 
 
-/* Door */
+/* DOOR */
+
+const doorZ=house.z-7.1;
 
 const door=new THREE.Mesh(
   new THREE.BoxGeometry(2.5,4,.25),
   mat(0x563a25)
 );
 
-door.position.set(
-  house.x,
-  2,
-  house.doorZ
-);
-
-houseGroup.add(door);
+door.position.set(house.x,2,doorZ);
+exterior.add(door);
 
 
-/* Door frame */
+/* WINDOWS */
 
-const frameMat=mat(0xffffff);
-
-const frameTop=new THREE.Mesh(
-  new THREE.BoxGeometry(3.1,.25,.3),
-  frameMat
-);
-
-frameTop.position.set(
-  house.x,
-  4.15,
-  house.doorZ-.15
-);
-
-houseGroup.add(frameTop);
-
-
-/* Windows */
-
-function makeHouseWindow(x,z){
+function houseWindow(x){
 
   const w=new THREE.Mesh(
     new THREE.BoxGeometry(3.2,2.3,.15),
     mat(0x29475a,.25)
   );
 
-  w.position.set(x,3.4,z);
-
-  houseGroup.add(w);
+  w.position.set(x,3.4,house.z-7.15);
+  exterior.add(w);
 }
 
-makeHouseWindow(48,house.doorZ-.05);
-makeHouseWindow(62,house.doorZ-.05);
+houseWindow(48);
+houseWindow(62);
 
 
-/* =====================================================
-   HOUSE FURNITURE
-===================================================== */
+/* COMPOUND WALLS */
 
-function furnitureBox(x,y,z,w,h,d,color){
+const wallMat=mat(0xb8a995);
 
-  const f=new THREE.Mesh(
+function wall(x,y,z,w,h,d){
+
+  const q=new THREE.Mesh(
     new THREE.BoxGeometry(w,h,d),
-    mat(color)
+    wallMat
   );
 
-  f.position.set(x,y,z);
-  f.castShadow=true;
-
-  houseGroup.add(f);
+  q.position.set(x,y,z);
+  exterior.add(q);
 }
 
+wall(house.x,1,house.z+14,28,2,.4);
+wall(house.x-14,1,house.z,.4,2,28);
+wall(house.x+14,1,house.z,.4,2,28);
 
-/* Sofa */
+/* FRONT WALL WITH GATE OPENING */
 
-furnitureBox(
-  house.x-4,
-  1,
-  house.z+2,
-  5,
-  1.4,
-  2,
-  0x5d4636
-);
+wall(house.x-10,1,house.z-14,8,2,.4);
+wall(house.x+10,1,house.z-14,8,2,.4);
 
 
-/* Table */
-
-furnitureBox(
-  house.x+3,
-  1.1,
-  house.z+1,
-  3,
-  .3,
-  2,
-  0x70452b
-);
-
-
-/* Bed */
-
-furnitureBox(
-  house.x+3,
-  .8,
-  house.z+4.5,
-  4,
-  .7,
-  3,
-  0xeeeeee
-);
-
-
-/* TV */
-
-furnitureBox(
-  house.x-4,
-  2.2,
-  house.z+6.3,
-  4,
-  2.2,
-  .2,
-  0x111111
-);
-
-
-/* =====================================================
-   COMPOUND
-===================================================== */
-
-const compoundMat=mat(0xb8a995);
-
-function compoundWall(x,y,z,w,h,d){
-
-  const wall=new THREE.Mesh(
-    new THREE.BoxGeometry(w,h,d),
-    compoundMat
-  );
-
-  wall.position.set(x,y,z);
-
-  scene.add(wall);
-}
-
-
-/* Back */
-
-compoundWall(
-  house.x,
-  1,
-  house.z+14,
-  28,
-  2,
-  .4
-);
-
-
-/* Left */
-
-compoundWall(
-  house.x-14,
-  1,
-  house.z,
-  .4,
-  2,
-  28
-);
-
-
-/* Right */
-
-compoundWall(
-  house.x+14,
-  1,
-  house.z,
-  .4,
-  2,
-  28
-);
-
-
-/* Front pieces leaving gate */
-
-compoundWall(
-  house.x-10,
-  1,
-  house.z-14,
-  8,
-  2,
-  .4
-);
-
-compoundWall(
-  house.x+10,
-  1,
-  house.z-14,
-  8,
-  2,
-  .4
-);
-
-
-/* Gate posts */
+/* GATE POSTS */
 
 function gatePost(x){
 
@@ -894,261 +444,360 @@ function gatePost(x){
     mat(0x777777)
   );
 
-  p.position.set(
-    x,
-    1.4,
-    house.z-14
-  );
-
-  scene.add(p);
+  p.position.set(x,1.4,house.z-14);
+  exterior.add(p);
 }
 
 gatePost(house.x-4);
 gatePost(house.x+4);
 
 
-/* =====================================================
-   DRIVEWAY
-===================================================== */
+/* ================================
+   REAL HOUSE INTERIOR
+================================ */
 
-const driveway=new THREE.Mesh(
-  new THREE.BoxGeometry(8,.12,14),
-  mat(0x777777)
+const floor=new THREE.Mesh(
+  new THREE.BoxGeometry(17.5,.2,13.5),
+  mat(0xc5a77c)
 );
 
-driveway.position.set(
+floor.position.set(house.x,.1,house.z);
+interior.add(floor);
+
+
+/* INTERIOR WALLS */
+
+function insideWall(x,y,z,w,h,d,color=0xe7d5b8){
+
+  const q=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    mat(color)
+  );
+
+  q.position.set(x,y,z);
+  q.receiveShadow=true;
+  interior.add(q);
+}
+
+
+/* Back wall */
+
+insideWall(
+  house.x,3.5,house.z+6.5,
+  18,7,.3
+);
+
+
+/* Left wall */
+
+insideWall(
+  house.x-8.5,3.5,house.z,
+  .3,7,13
+);
+
+
+/* Right wall */
+
+insideWall(
+  house.x+8.5,3.5,house.z,
+  .3,7,13
+);
+
+
+/* Front wall pieces leaving doorway */
+
+insideWall(
+  house.x-6,3.5,house.z-6.5,
+  5,7,.3
+);
+
+insideWall(
+  house.x+6,3.5,house.z-6.5,
+  5,7,.3
+);
+
+insideWall(
+  house.x,5.8,house.z-6.5,
+  7,2.4,.3
+);
+
+
+/* CEILING */
+
+const ceiling=new THREE.Mesh(
+  new THREE.BoxGeometry(18,.2,14),
+  mat(0xf2eee5)
+);
+
+ceiling.position.set(house.x,7,house.z);
+interior.add(ceiling);
+
+
+/* SOFA */
+
+function furniture(x,y,z,w,h,d,color){
+
+  const q=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    mat(color)
+  );
+
+  q.position.set(x,y,z);
+  q.castShadow=true;
+  interior.add(q);
+}
+
+furniture(
+  house.x-4,1,house.z+2,
+  5,1.4,2,
+  0x5d4636
+);
+
+
+/* TABLE */
+
+furniture(
+  house.x+2,1.1,house.z+1,
+  3,.3,2,
+  0x70452b
+);
+
+
+/* BED */
+
+furniture(
+  house.x+3,.8,house.z+4,
+  4,.7,3,
+  0xeeeeee
+);
+
+
+/* TV */
+
+furniture(
+  house.x-4,2.2,house.z+6.2,
+  4,2.2,.2,
+  0x111111
+);
+
+
+/* INTERIOR LIGHT */
+
+const houseLight=new THREE.PointLight(
+  0xffd58a,
+  18,
+  30
+);
+
+houseLight.position.set(
   house.x,
-  .06,
-  house.z-10
+  5.8,
+  house.z
 );
 
-scene.add(driveway);
+interior.add(houseLight);
 
 
-/* =====================================================
-   PLAYER CAR
-===================================================== */
+/* ================================
+   CAR
+================================ */
 
-const car=new Car(
-  scene,
-  0,
-  40
-);
+const car=new Car(scene,0,40);
 
 
-/* =====================================================
-   MOBILE CONTROLS
-===================================================== */
+/* ================================
+   CONTROLS
+================================ */
 
 const keys={
-  w:false,
-  s:false,
-  a:false,
-  d:false
+  w:false,s:false,a:false,d:false
 };
 
-function bindButton(id,key){
+function bind(id,key){
 
-  const el=document.getElementById(id);
+  const b=document.getElementById(id);
 
-  el.addEventListener("touchstart",function(e){
+  b.addEventListener("touchstart",e=>{
     e.preventDefault();
     keys[key]=true;
   },{passive:false});
 
-  el.addEventListener("touchend",function(e){
+  b.addEventListener("touchend",e=>{
     e.preventDefault();
     keys[key]=false;
   },{passive:false});
 
-  el.addEventListener("touchcancel",function(){
-    keys[key]=false;
-  });
-
-  el.addEventListener("mousedown",function(){
+  b.addEventListener("mousedown",()=>{
     keys[key]=true;
   });
 
-  el.addEventListener("mouseup",function(){
+  b.addEventListener("mouseup",()=>{
     keys[key]=false;
   });
 
-  el.addEventListener("mouseleave",function(){
+  b.addEventListener("mouseleave",()=>{
     keys[key]=false;
   });
 }
 
-bindButton("up","w");
-bindButton("down","s");
-bindButton("left","a");
-bindButton("right","d");
+bind("up","w");
+bind("down","s");
+bind("left","a");
+bind("right","d");
 
 
-/* Keyboard */
-
-window.addEventListener("keydown",function(e){
-
-  if(e.key==="w" || e.key==="ArrowUp") keys.w=true;
-  if(e.key==="s" || e.key==="ArrowDown") keys.s=true;
-  if(e.key==="a" || e.key==="ArrowLeft") keys.a=true;
-  if(e.key==="d" || e.key==="ArrowRight") keys.d=true;
-});
-
-window.addEventListener("keyup",function(e){
-
-  if(e.key==="w" || e.key==="ArrowUp") keys.w=false;
-  if(e.key==="s" || e.key==="ArrowDown") keys.s=false;
-  if(e.key==="a" || e.key==="ArrowLeft") keys.a=false;
-  if(e.key==="d" || e.key==="ArrowRight") keys.d=false;
-});
-
-
-/* =====================================================
+/* ================================
    CAMERA
-===================================================== */
+================================ */
 
-let cameraOrbit=0;
-let cameraPitch=.45;
+let orbit=0;
+let pitch=.45;
 
-let touching=false;
+let touch=false;
 let lastX=0;
 let lastY=0;
 
-canvas.addEventListener("touchstart",function(e){
+canvas.addEventListener("touchstart",e=>{
 
   if(e.touches.length!==1)return;
 
-  touching=true;
-
+  touch=true;
   lastX=e.touches[0].clientX;
   lastY=e.touches[0].clientY;
+
 },{passive:true});
 
+canvas.addEventListener("touchmove",e=>{
 
-canvas.addEventListener("touchmove",function(e){
-
-  if(!touching || e.touches.length!==1)return;
+  if(!touch || e.touches.length!==1)return;
 
   const x=e.touches[0].clientX;
   const y=e.touches[0].clientY;
 
-  const dx=x-lastX;
-  const dy=y-lastY;
+  orbit-=(x-lastX)*.006;
+  pitch-=(y-lastY)*.004;
 
-  cameraOrbit-=dx*.006;
-
-  cameraPitch-=dy*.004;
-
-  cameraPitch=Math.max(.15,Math.min(1.1,cameraPitch));
+  pitch=Math.max(.15,Math.min(1.1,pitch));
 
   lastX=x;
   lastY=y;
+
+},{passive:true});
+
+canvas.addEventListener("touchend",()=>{
+  touch=false;
 },{passive:true});
 
 
-canvas.addEventListener("touchend",function(){
-  touching=false;
-},{passive:true});
-
-
-/* =====================================================
-   HOUSE ENTER / EXIT
-===================================================== */
+/* ================================
+   ENTER / EXIT HOUSE
+================================ */
 
 let inside=false;
 
-const interaction=document.getElementById("interaction");
-const exitButton=document.getElementById("exit");
-const insideLabel=document.getElementById("insideLabel");
+const enterBtn=document.getElementById("interaction");
+const exitBtn=document.getElementById("exit");
+const label=document.getElementById("insideLabel");
 
-function distanceToHouse(){
+function houseDistance(){
 
-  const dx=
-    car.group.position.x-house.x;
-
-  const dz=
-    car.group.position.z-house.doorZ;
+  const dx=car.group.position.x-house.x;
+  const dz=car.group.position.z-doorZ;
 
   return Math.sqrt(dx*dx+dz*dz);
 }
 
-interaction.addEventListener("click",function(){
+
+enterBtn.onclick=function(){
 
   inside=true;
 
-  houseGroup.visible=true;
+  exterior.visible=false;
+  interior.visible=true;
 
-  insideLabel.style.display="block";
-  interaction.style.display="none";
-  exitButton.style.display="block";
-});
-
-
-exitButton.addEventListener("click",function(){
-
-  inside=false;
-
-  insideLabel.style.display="none";
-  exitButton.style.display="none";
+  /* Put car inside the house */
 
   car.group.position.set(
     house.x,
     0,
-    house.doorZ-9
+    house.z
   );
-});
+
+  car.speed=0;
+
+  enterBtn.style.display="none";
+  exitBtn.style.display="block";
+  label.style.display="block";
+
+  document.getElementById("hint").textContent=
+    "You are inside your house";
+};
 
 
-/* =====================================================
+exitBtn.onclick=function(){
+
+  inside=false;
+
+  exterior.visible=true;
+  interior.visible=false;
+
+  /* Put car back outside the gate */
+
+  car.group.position.set(
+    house.x,
+    0,
+    house.z-19
+  );
+
+  car.speed=0;
+
+  exitBtn.style.display="none";
+  label.style.display="none";
+
+  document.getElementById("hint").textContent=
+    "Swipe to look around";
+};
+
+
+/* ================================
    MULTIPLAYER
-===================================================== */
+================================ */
 
 let socket=null;
 let myId=null;
-
 const otherPlayers={};
 
-function connectMultiplayer(){
+function connect(){
 
   try{
 
     const protocol=
       location.protocol==="https:"
-      ? "wss:"
-      : "ws:";
+      ?"wss:"
+      :"ws:";
 
     socket=new WebSocket(
       protocol+"//"+location.host
     );
 
-
-    socket.onopen=function(){
-
-      document.getElementById("online").textContent=
-        "ONLINE";
-
-      document.getElementById("online").style.background=
-        "rgba(0,120,40,.7)";
+    socket.onopen=()=>{
+      online.textContent="ONLINE";
+      online.style.background="rgba(0,120,40,.75)";
     };
 
-
-    socket.onmessage=function(event){
+    socket.onmessage=e=>{
 
       try{
 
-        const data=JSON.parse(event.data);
-
+        const data=JSON.parse(e.data);
 
         if(data.type==="welcome"){
-
           myId=data.id;
         }
-
 
         if(data.type==="players"){
 
           const active={};
-
 
           for(const id in data.players){
 
@@ -1160,80 +809,64 @@ function connectMultiplayer(){
 
               const p=new THREE.Mesh(
                 new THREE.BoxGeometry(2,1.4,4),
-                mat(0x1b3d8f)
+                mat(0x2449a8)
               );
 
               p.position.y=.8;
-
               scene.add(p);
 
               otherPlayers[id]=p;
             }
 
-
             const p=otherPlayers[id];
-            const info=data.players[id];
+            const d=data.players[id];
 
-            p.position.x=info.x;
-            p.position.y=info.y+.8;
-            p.position.z=info.z;
-            p.rotation.y=info.rotation;
+            p.position.set(
+              d.x,
+              d.y+.8,
+              d.z
+            );
+
+            p.rotation.y=d.rotation;
           }
-
 
           for(const id in otherPlayers){
 
             if(!active[id]){
 
-              scene.remove(
-                otherPlayers[id]
-              );
-
+              scene.remove(otherPlayers[id]);
               delete otherPlayers[id];
             }
           }
         }
 
       }catch(err){
-
         console.log(err);
       }
     };
 
-
-    socket.onclose=function(){
-
-      document.getElementById("online").textContent=
-        "OFFLINE";
-
-      document.getElementById("online").style.background=
-        "rgba(120,70,0,.7)";
+    socket.onclose=()=>{
+      online.textContent="OFFLINE";
+      online.style.background="rgba(120,70,0,.75)";
     };
 
-
-    socket.onerror=function(){
-
-      document.getElementById("online").textContent=
-        "OFFLINE";
+    socket.onerror=()=>{
+      online.textContent="OFFLINE";
     };
 
-  }catch(err){
-
-    document.getElementById("online").textContent=
-      "OFFLINE";
+  }catch(e){
+    online.textContent="OFFLINE";
   }
 }
 
 
-/* =====================================================
+/* ================================
    RESIZE
-===================================================== */
+================================ */
 
-window.addEventListener("resize",function(){
+window.addEventListener("resize",()=>{
 
-  camera.aspect=
-    innerWidth/innerHeight;
-
+  camera.aspect=innerWidth/innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(
@@ -1243,127 +876,101 @@ window.addEventListener("resize",function(){
 });
 
 
-/* =====================================================
+/* ================================
    GAME LOOP
-===================================================== */
+================================ */
 
 function animate(){
 
   requestAnimationFrame(animate);
 
+  if(!inside){
+    car.update(keys);
+  }
 
-  /* Drive */
 
-  car.update(keys);
-
-
-  /* Multiplayer position */
+  /* Multiplayer */
 
   if(
     socket &&
     socket.readyState===WebSocket.OPEN
   ){
 
-    socket.send(
-      JSON.stringify({
-        type:"position",
-        x:car.group.position.x,
-        y:car.group.position.y,
-        z:car.group.position.z,
-        rotation:car.group.rotation.y
-      })
-    );
+    socket.send(JSON.stringify({
+      type:"position",
+      x:car.group.position.x,
+      y:car.group.position.y,
+      z:car.group.position.z,
+      rotation:car.group.rotation.y
+    }));
   }
 
 
-  /* House interaction */
+  /* ENTER BUTTON */
 
   if(!inside){
 
-    const distance=distanceToHouse();
-
-    if(distance<12){
-
-      interaction.style.display="block";
-
+    if(houseDistance()<13){
+      enterBtn.style.display="block";
     }else{
-
-      interaction.style.display="none";
+      enterBtn.style.display="none";
     }
   }
 
 
-  /* Camera */
+  /* CAMERA */
 
   const target=car.group.position.clone();
-
   target.y+=1.8;
 
-
-  const distance=inside ? 8 : 11;
+  const distance=inside?7:11;
 
   const horizontal=
-    Math.cos(cameraPitch)*distance;
+    Math.cos(pitch)*distance;
 
   const vertical=
-    Math.sin(cameraPitch)*distance;
+    Math.sin(pitch)*distance;
 
-
-  const camX=
+  const cx=
     target.x+
-    Math.sin(cameraOrbit)*
-    horizontal;
+    Math.sin(orbit)*horizontal;
 
-  const camZ=
+  const cz=
     target.z+
-    Math.cos(cameraOrbit)*
-    horizontal;
-
+    Math.cos(orbit)*horizontal;
 
   camera.position.x+=
-    (camX-camera.position.x)*.08;
+    (cx-camera.position.x)*.08;
 
   camera.position.y+=
     (target.y+vertical-camera.position.y)*.08;
 
   camera.position.z+=
-    (camZ-camera.position.z)*.08;
-
+    (cz-camera.position.z)*.08;
 
   camera.lookAt(target);
 
-
-  renderer.render(
-    scene,
-    camera
-  );
+  renderer.render(scene,camera);
 }
 
 
-/* =====================================================
-   START
-===================================================== */
+/* START */
 
-document.getElementById("online").textContent=
-  "LOADING WORLD...";
+online.textContent="CONNECTING...";
 
-connectMultiplayer();
-
+connect();
 animate();
-
-document.getElementById("online").textContent=
-  "CONNECTING...";
 
 }catch(error){
 
-  showError(
-    error.message ||
-    String(error)
-  );
+  const box=document.getElementById("online");
 
+  box.textContent=
+    "GAME ERROR: "+error.message;
+
+  box.style.background="#c62828";
 }
 
 </script>
-
 </body>
 </html>
