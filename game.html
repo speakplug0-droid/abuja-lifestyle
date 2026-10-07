@@ -2,465 +2,119 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>AbujaLifestyle</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-user-select: none;
-  user-select: none;
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  touch-action:none;
+  font-family:Arial,sans-serif;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #111;
-  font-family: Arial, sans-serif;
-  touch-action: none;
+#game{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100dvh;
+  overflow:hidden;
+  background:#000;
 }
 
-/* GAME SCREEN */
-#game {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100dvh;
-  overflow: hidden;
-  background: #72b9e8;
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
 }
 
-/* WORLD */
-#world {
-  position: absolute;
-  width: 2400px;
-  height: 1600px;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  transition: none;
+#hud{
+  position:absolute;
+  top:12px;
+  left:12px;
+  right:12px;
+  display:flex;
+  justify-content:space-between;
+  z-index:5;
+  pointer-events:none;
 }
 
-/* SKY */
-.sky {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      #64b5e5 0%,
-      #a8d9f0 42%,
-      #83c66b 42%,
-      #4e9b45 100%
-    );
+.box{
+  background:rgba(0,0,0,.65);
+  color:white;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:bold;
+  backdrop-filter:blur(8px);
 }
 
-/* ROAD */
-.road {
-  position: absolute;
-  left: 0;
-  top: 650px;
-  width: 2400px;
-  height: 360px;
-  background: #30343a;
+#phone{
+  position:absolute;
+  top:70px;
+  right:18px;
+  width:58px;
+  height:58px;
+  border:0;
+  border-radius:50%;
+  background:rgba(0,0,0,.72);
+  color:white;
+  font-size:25px;
+  z-index:6;
 }
 
-.road::before {
-  content: "";
-  position: absolute;
-  top: 175px;
-  left: 0;
-  width: 2400px;
-  height: 10px;
-  background: #f5d547;
+#joystick{
+  position:absolute;
+  left:22px;
+  bottom:25px;
+  width:125px;
+  height:125px;
+  border-radius:50%;
+  background:rgba(255,255,255,.16);
+  border:2px solid rgba(255,255,255,.35);
+  z-index:6;
 }
 
-.road::after {
-  content: "";
-  position: absolute;
-  top: 20px;
-  left: 0;
-  width: 2400px;
-  height: 6px;
-  background: #777;
+#stick{
+  position:absolute;
+  width:58px;
+  height:58px;
+  left:31px;
+  top:31px;
+  border-radius:50%;
+  background:rgba(255,255,255,.7);
 }
 
-/* SIDEWALKS */
-.sidewalk {
-  position: absolute;
-  left: 0;
-  width: 2400px;
-  height: 55px;
-  background: #aaa;
+#action{
+  position:absolute;
+  right:24px;
+  bottom:38px;
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.55);
+  background:rgba(0,0,0,.72);
+  color:white;
+  font-weight:bold;
+  z-index:6;
 }
 
-.sidewalk.top {
-  top: 595px;
-}
-
-.sidewalk.bottom {
-  top: 1010px;
-}
-
-/* BUILDINGS */
-.building {
-  position: absolute;
-  background: #ddd;
-  border: 5px solid #555;
-  box-shadow: 12px 12px 0 rgba(0,0,0,.2);
-}
-
-.building::before {
-  content: "";
-  position: absolute;
-  inset: 18px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #8ed0ed 0 45px,
-      #444 45px 55px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 45px,
-      #444 45px 55px
-    );
-  opacity: .9;
-}
-
-.b1 {
-  left: 180px;
-  top: 140px;
-  width: 300px;
-  height: 420px;
-}
-
-.b2 {
-  left: 620px;
-  top: 210px;
-  width: 260px;
-  height: 350px;
-  background: #c99d70;
-}
-
-.b3 {
-  left: 1030px;
-  top: 120px;
-  width: 340px;
-  height: 440px;
-  background: #e7e0c9;
-}
-
-.b4 {
-  left: 1570px;
-  top: 190px;
-  width: 290px;
-  height: 370px;
-  background: #d39b91;
-}
-
-.b5 {
-  left: 1990px;
-  top: 110px;
-  width: 270px;
-  height: 450px;
-  background: #d8d8d8;
-}
-
-/* TREES */
-.tree {
-  position: absolute;
-  width: 110px;
-  height: 150px;
-}
-
-.tree .trunk {
-  position: absolute;
-  bottom: 0;
-  left: 45px;
-  width: 22px;
-  height: 75px;
-  background: #71462b;
-}
-
-.tree .leaves {
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #237a35;
-  box-shadow:
-    30px -15px 0 #2f9140,
-    -25px -10px 0 #2b8539,
-    5px -35px 0 #328f3c;
-}
-
-.t1 { left: 40px; top: 430px; }
-.t2 { left: 900px; top: 450px; }
-.t3 { left: 1430px; top: 420px; }
-.t4 { left: 1900px; top: 430px; }
-
-/* PLAYER */
-#player {
-  position: absolute;
-  width: 60px;
-  height: 110px;
-  left: 1170px;
-  top: 1080px;
-  z-index: 20;
-}
-
-.head {
-  position: absolute;
-  left: 17px;
-  top: 0;
-  width: 27px;
-  height: 30px;
-  border-radius: 50%;
-  background: #8b542f;
-}
-
-.hair {
-  position: absolute;
-  left: 15px;
-  top: -3px;
-  width: 31px;
-  height: 16px;
-  border-radius: 50% 50% 20% 20%;
-  background: #171717;
-}
-
-.body {
-  position: absolute;
-  left: 12px;
-  top: 29px;
-  width: 37px;
-  height: 43px;
-  border-radius: 8px;
-  background: #111;
-}
-
-.arm {
-  position: absolute;
-  top: 32px;
-  width: 9px;
-  height: 42px;
-  border-radius: 8px;
-  background: #8b542f;
-}
-
-.arm.left { left: 5px; transform: rotate(8deg); }
-.arm.right { right: 5px; transform: rotate(-8deg); }
-
-.leg {
-  position: absolute;
-  top: 68px;
-  width: 13px;
-  height: 38px;
-  border-radius: 8px;
-  background: #222;
-}
-
-.leg.left { left: 16px; }
-.leg.right { right: 16px; }
-
-.shoe {
-  position: absolute;
-  top: 100px;
-  width: 20px;
-  height: 10px;
-  border-radius: 6px;
-  background: #050505;
-}
-
-.shoe.left { left: 10px; }
-.shoe.right { right: 10px; }
-
-/* CAR */
-#car {
-  position: absolute;
-  left: 1350px;
-  top: 1030px;
-  width: 210px;
-  height: 100px;
-  z-index: 18;
-}
-
-.car-body {
-  position: absolute;
-  left: 5px;
-  bottom: 12px;
-  width: 200px;
-  height: 65px;
-  border-radius: 25px 30px 18px 18px;
-  background: linear-gradient(#171717, #050505);
-  box-shadow: 0 12px 15px rgba(0,0,0,.45);
-}
-
-.car-roof {
-  position: absolute;
-  left: 42px;
-  top: 5px;
-  width: 125px;
-  height: 50px;
-  border-radius: 55px 55px 5px 5px;
-  background: #111;
-}
-
-.window {
-  position: absolute;
-  top: 13px;
-  width: 52px;
-  height: 29px;
-  background: #203947;
-  border: 2px solid #555;
-}
-
-.window.front {
-  left: 105px;
-  transform: skew(15deg);
-}
-
-.window.back {
-  left: 50px;
-  transform: skew(-15deg);
-}
-
-.grille {
-  position: absolute;
-  right: -2px;
-  top: 31px;
-  width: 25px;
-  height: 24px;
-  border-radius: 4px;
-  background: #555;
-}
-
-.light {
-  position: absolute;
-  top: 20px;
-  width: 20px;
-  height: 10px;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 0 12px #fff;
-}
-
-.light.front {
-  right: 8px;
-}
-
-.light.back {
-  left: 8px;
-}
-
-.wheel {
-  position: absolute;
-  bottom: 0;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #080808;
-  border: 7px solid #444;
-}
-
-.wheel.front { right: 25px; }
-.wheel.back { left: 25px; }
-
-/* HUD */
-#hud {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  pointer-events: none;
-}
-
-.hud-box {
-  padding: 10px 14px;
-  border-radius: 12px;
-  color: white;
-  background: rgba(0,0,0,.65);
-  backdrop-filter: blur(8px);
-  font-weight: bold;
-  box-shadow: 0 4px 12px rgba(0,0,0,.25);
-}
-
-/* JOYSTICK */
-#joystick {
-  position: fixed;
-  left: 25px;
-  bottom: 30px;
-  width: 125px;
-  height: 125px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.15);
-  border: 2px solid rgba(255,255,255,.35);
-  z-index: 100;
-}
-
-#stick {
-  position: absolute;
-  left: 32px;
-  top: 32px;
-  width: 61px;
-  height: 61px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.65);
-  box-shadow: 0 5px 15px rgba(0,0,0,.3);
-}
-
-/* ACTION */
-#action {
-  position: fixed;
-  right: 25px;
-  bottom: 45px;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  border: 3px solid rgba(255,255,255,.6);
-  background: rgba(20,20,20,.75);
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  z-index: 100;
-  box-shadow: 0 7px 20px rgba(0,0,0,.35);
-}
-
-/* STATUS */
-#status {
-  position: fixed;
-  left: 50%;
-  bottom: 25px;
-  transform: translateX(-50%);
-  padding: 9px 16px;
-  border-radius: 20px;
-  background: rgba(0,0,0,.65);
-  color: white;
-  font-size: 13px;
-  z-index: 100;
-  pointer-events: none;
-}
-
-/* PHONE BUTTON */
-#phone {
-  position: fixed;
-  right: 25px;
-  top: 80px;
-  width: 58px;
-  height: 58px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(0,0,0,.7);
-  color: white;
-  font-size: 25px;
-  z-index: 100;
+#status{
+  position:absolute;
+  left:50%;
+  bottom:20px;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.65);
+  color:white;
+  padding:9px 16px;
+  border-radius:20px;
+  font-size:13px;
+  z-index:6;
+  pointer-events:none;
 }
 </style>
 </head>
@@ -469,262 +123,494 @@ html, body {
 
 <div id="game">
 
-  <div id="world">
+<canvas id="canvas"></canvas>
 
-    <div class="sky"></div>
+<div id="hud">
+  <div class="box">🇳🇬 ABUJA</div>
+  <div class="box">₦25,000</div>
+</div>
 
-    <div class="building b1"></div>
-    <div class="building b2"></div>
-    <div class="building b3"></div>
-    <div class="building b4"></div>
-    <div class="building b5"></div>
+<button id="phone">📱</button>
 
-    <div class="tree t1">
-      <div class="leaves"></div>
-      <div class="trunk"></div>
-    </div>
+<div id="joystick">
+  <div id="stick"></div>
+</div>
 
-    <div class="tree t2">
-      <div class="leaves"></div>
-      <div class="trunk"></div>
-    </div>
+<button id="action">ACTION</button>
 
-    <div class="tree t3">
-      <div class="leaves"></div>
-      <div class="trunk"></div>
-    </div>
-
-    <div class="tree t4">
-      <div class="leaves"></div>
-      <div class="trunk"></div>
-    </div>
-
-    <div class="sidewalk top"></div>
-    <div class="road"></div>
-    <div class="sidewalk bottom"></div>
-
-    <div id="player">
-      <div class="head"></div>
-      <div class="hair"></div>
-      <div class="body"></div>
-      <div class="arm left"></div>
-      <div class="arm right"></div>
-      <div class="leg left"></div>
-      <div class="leg right"></div>
-      <div class="shoe left"></div>
-      <div class="shoe right"></div>
-    </div>
-
-    <div id="car">
-      <div class="car-body"></div>
-      <div class="car-roof"></div>
-      <div class="window front"></div>
-      <div class="window back"></div>
-      <div class="grille"></div>
-      <div class="light front"></div>
-      <div class="light back"></div>
-      <div class="wheel front"></div>
-      <div class="wheel back"></div>
-    </div>
-
-  </div>
-
-  <div id="hud">
-    <div class="hud-box">🇳🇬 ABUJA</div>
-    <div class="hud-box">₦25,000</div>
-  </div>
-
-  <button id="phone">📱</button>
-
-  <div id="joystick">
-    <div id="stick"></div>
-  </div>
-
-  <button id="action">ACTION</button>
-
-  <div id="status">Walk around Abuja</div>
+<div id="status">Welcome to Abuja</div>
 
 </div>
 
 <script>
-const world = document.getElementById("world");
-const player = document.getElementById("player");
-const car = document.getElementById("car");
-const joystick = document.getElementById("joystick");
-const stick = document.getElementById("stick");
-const action = document.getElementById("action");
-const status = document.getElementById("status");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
 
-let playerX = 1170;
-let playerY = 1080;
+let W=innerWidth;
+let H=innerHeight;
 
-let carX = 1350;
-let carY = 1030;
-
-let moveX = 0;
-let moveY = 0;
-
-let driving = false;
-
-let joystickActive = false;
-
-function updatePlayer() {
-  player.style.left = playerX + "px";
-  player.style.top = playerY + "px";
+function resize(){
+  W=innerWidth;
+  H=innerHeight;
+  canvas.width=W*devicePixelRatio;
+  canvas.height=H*devicePixelRatio;
+  canvas.style.width=W+"px";
+  canvas.style.height=H+"px";
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
 }
 
-function updateCar() {
-  car.style.left = carX + "px";
-  car.style.top = carY + "px";
+addEventListener("resize",resize);
+resize();
+
+/* WORLD */
+
+const world={
+  width:5000,
+  height:5000
+};
+
+let player={
+  x:2500,
+  y:3100,
+  angle:0
+};
+
+let car={
+  x:2800,
+  y:3000,
+  angle:0
+};
+
+let driving=false;
+
+let joyX=0;
+let joyY=0;
+let joyActive=false;
+
+/* BUILDINGS */
+
+const buildings=[];
+
+for(let x=500;x<4700;x+=550){
+
+  buildings.push({
+    x:x,
+    y:650,
+    w:300,
+    h:360,
+    color:"#c8b08b"
+  });
+
+  buildings.push({
+    x:x+120,
+    y:3950,
+    w:300,
+    h:360,
+    color:"#d3c2a5"
+  });
 }
 
-function camera() {
+/* TREES */
 
-  let targetX;
-  let targetY;
+const trees=[];
 
-  if (driving) {
-    targetX = carX + 100;
-    targetY = carY + 50;
-  } else {
-    targetX = playerX + 30;
-    targetY = playerY + 55;
+for(let i=0;i<35;i++){
+
+  trees.push({
+    x:300+Math.random()*4400,
+    y:250+Math.random()*4500
+  });
+}
+
+/* DRAW WORLD */
+
+function drawWorld(){
+
+  ctx.fillStyle="#7fc5ec";
+  ctx.fillRect(0,0,W,H);
+
+  const cameraX=driving?car.x:player.x;
+  const cameraY=driving?car.y:player.y;
+
+  ctx.save();
+
+  ctx.translate(
+    W/2-cameraX,
+    H/2-cameraY
+  );
+
+  /* grass */
+
+  ctx.fillStyle="#4f9c48";
+  ctx.fillRect(0,0,world.width,world.height);
+
+  /* main road */
+
+  ctx.fillStyle="#30343a";
+  ctx.fillRect(0,2100,world.width,800);
+
+  /* road markings */
+
+  ctx.strokeStyle="#f4d343";
+  ctx.lineWidth=10;
+  ctx.setLineDash([70,70]);
+
+  ctx.beginPath();
+  ctx.moveTo(0,2500);
+  ctx.lineTo(world.width,2500);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+
+  /* side roads */
+
+  ctx.fillStyle="#363a3f";
+
+  for(let x=350;x<world.width;x+=700){
+    ctx.fillRect(x,0,260,world.height);
   }
 
-  const screenX = window.innerWidth / 2;
-  const screenY = window.innerHeight / 2;
+  /* buildings */
 
-  const x = screenX - targetX;
-  const y = screenY - targetY;
+  for(const b of buildings){
 
-  world.style.transform =
-    "translate(" + x + "px, " + y + "px)";
-}
+    ctx.fillStyle="rgba(0,0,0,.25)";
+    ctx.fillRect(b.x+15,b.y+15,b.w,b.h);
 
-function gameLoop() {
+    ctx.fillStyle=b.color;
+    ctx.fillRect(b.x,b.y,b.w,b.h);
 
-  if (driving) {
+    ctx.fillStyle="#72b9d7";
 
-    carX += moveX * 0.55;
-    carY += moveY * 0.48;
-
-  } else {
-
-    playerX += moveX * 0.16;
-    playerY += moveY * 0.13;
-
+    for(let wx=b.x+25;wx<b.x+b.w-20;wx+=55){
+      for(let wy=b.y+25;wy<b.y+b.h-20;wy+=65){
+        ctx.fillRect(wx,wy,30,40);
+      }
+    }
   }
 
-  playerX = Math.max(20, Math.min(2320, playerX));
-  playerY = Math.max(20, Math.min(1480, playerY));
+  /* trees */
 
-  carX = Math.max(20, Math.min(2190, carX));
-  carY = Math.max(20, Math.min(1480, carY));
+  for(const t of trees){
 
-  updatePlayer();
-  updateCar();
-  camera();
+    ctx.fillStyle="#70452b";
+    ctx.fillRect(t.x-10,t.y,20,65);
 
-  requestAnimationFrame(gameLoop);
-}
+    ctx.fillStyle="#257838";
+    ctx.beginPath();
+    ctx.arc(t.x,t.y,45,0,Math.PI*2);
+    ctx.fill();
 
-function joystickMove(clientX, clientY) {
-
-  const rect = joystick.getBoundingClientRect();
-
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  let dx = clientX - centerX;
-  let dy = clientY - centerY;
-
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  const maxDistance = 45;
-
-  if (distance > maxDistance) {
-    dx = dx / distance * maxDistance;
-    dy = dy / distance * maxDistance;
+    ctx.fillStyle="#318c3e";
+    ctx.beginPath();
+    ctx.arc(t.x+28,t.y-12,35,0,Math.PI*2);
+    ctx.fill();
   }
 
-  stick.style.transform =
-    "translate(" + dx + "px," + dy + "px)";
+  /* car */
 
-  moveX = dx / maxDistance;
-  moveY = dy / maxDistance;
+  drawCar(car.x,car.y);
+
+  /* player */
+
+  if(!driving){
+    drawPlayer(player.x,player.y);
+  }
+
+  ctx.restore();
 }
 
-function joystickEnd() {
+/* PLAYER */
 
-  joystickActive = false;
+function drawPlayer(x,y){
 
-  moveX = 0;
-  moveY = 0;
+  ctx.save();
+  ctx.translate(x,y);
 
-  stick.style.transform = "translate(0,0)";
+  /* shadow */
+
+  ctx.fillStyle="rgba(0,0,0,.35)";
+  ctx.beginPath();
+  ctx.ellipse(0,32,28,10,0,0,Math.PI*2);
+  ctx.fill();
+
+  /* legs */
+
+  ctx.fillStyle="#171717";
+  ctx.fillRect(-17,8,12,34);
+  ctx.fillRect(5,8,12,34);
+
+  /* shoes */
+
+  ctx.fillStyle="#050505";
+  ctx.fillRect(-21,38,18,8);
+  ctx.fillRect(4,38,18,8);
+
+  /* body */
+
+  ctx.fillStyle="#151515";
+  ctx.fillRect(-21,-35,42,45);
+
+  /* arms */
+
+  ctx.strokeStyle="#8b542f";
+  ctx.lineWidth=10;
+  ctx.lineCap="round";
+
+  ctx.beginPath();
+  ctx.moveTo(-21,-28);
+  ctx.lineTo(-30,4);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(21,-28);
+  ctx.lineTo(30,4);
+  ctx.stroke();
+
+  /* neck */
+
+  ctx.fillStyle="#8b542f";
+  ctx.fillRect(-8,-44,16,12);
+
+  /* head */
+
+  ctx.beginPath();
+  ctx.arc(0,-58,22,0,Math.PI*2);
+  ctx.fill();
+
+  /* hair */
+
+  ctx.fillStyle="#111";
+  ctx.beginPath();
+  ctx.arc(0,-65,23,Math.PI,Math.PI*2);
+  ctx.fill();
+
+  ctx.restore();
 }
 
-joystick.addEventListener("touchstart", function(e) {
-  joystickActive = true;
-  const t = e.touches[0];
-  joystickMove(t.clientX, t.clientY);
-}, {passive:false});
+/* RANGE ROVER STYLE SUV */
 
-joystick.addEventListener("touchmove", function(e) {
-  if (!joystickActive) return;
+function drawCar(x,y){
+
+  ctx.save();
+  ctx.translate(x,y);
+
+  ctx.fillStyle="rgba(0,0,0,.35)";
+  ctx.beginPath();
+  ctx.ellipse(0,45,115,30,0,0,Math.PI*2);
+  ctx.fill();
+
+  /* wheels */
+
+  ctx.fillStyle="#080808";
+
+  ctx.beginPath();
+  ctx.arc(-70,38,25,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(70,38,25,0,Math.PI*2);
+  ctx.fill();
+
+  /* main body */
+
+  ctx.fillStyle="#111";
+  ctx.beginPath();
+  ctx.roundRect(-105,-35,210,85,22);
+  ctx.fill();
+
+  /* roof */
+
+  ctx.fillStyle="#171717";
+  ctx.beginPath();
+  ctx.roundRect(-65,-75,130,55,28);
+  ctx.fill();
+
+  /* windows */
+
+  ctx.fillStyle="#29404c";
+
+  ctx.beginPath();
+  ctx.moveTo(-55,-65);
+  ctx.lineTo(-8,-65);
+  ctx.lineTo(-8,-25);
+  ctx.lineTo(-65,-25);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(5,-65);
+  ctx.lineTo(52,-58);
+  ctx.lineTo(65,-25);
+  ctx.lineTo(5,-25);
+  ctx.closePath();
+  ctx.fill();
+
+  /* headlights */
+
+  ctx.fillStyle="#fff";
+  ctx.fillRect(83,-10,17,14);
+  ctx.fillRect(-100,-10,17,14);
+
+  /* grille */
+
+  ctx.fillStyle="#555";
+  ctx.fillRect(95,10,10,28);
+
+  ctx.restore();
+}
+
+/* CONTROLS */
+
+function joystickMove(x,y){
+
+  const r=joystick.getBoundingClientRect();
+
+  const cx=r.left+r.width/2;
+  const cy=r.top+r.height/2;
+
+  let dx=x-cx;
+  let dy=y-cy;
+
+  const max=45;
+
+  const distance=Math.sqrt(dx*dx+dy*dy);
+
+  if(distance>max){
+    dx=dx/distance*max;
+    dy=dy/distance*max;
+  }
+
+  stick.style.transform=
+    `translate(${dx}px,${dy}px)`;
+
+  joyX=dx/max;
+  joyY=dy/max;
+}
+
+function joystickEnd(){
+
+  joyX=0;
+  joyY=0;
+
+  stick.style.transform="translate(0,0)";
+}
+
+joystick.addEventListener("touchstart",e=>{
 
   e.preventDefault();
 
-  const t = e.touches[0];
-  joystickMove(t.clientX, t.clientY);
-}, {passive:false});
+  joyActive=true;
 
-joystick.addEventListener("touchend", joystickEnd);
+  const t=e.touches[0];
 
-action.addEventListener("touchstart", function(e) {
+  joystickMove(t.clientX,t.clientY);
+
+},{passive:false});
+
+joystick.addEventListener("touchmove",e=>{
 
   e.preventDefault();
 
-  const distance =
-    Math.sqrt(
-      Math.pow(playerX - carX, 2) +
-      Math.pow(playerY - carY, 2)
-    );
+  if(!joyActive)return;
 
-  if (!driving && distance < 180) {
+  const t=e.touches[0];
 
-    driving = true;
+  joystickMove(t.clientX,t.clientY);
 
-    status.textContent = "Driving Range Rover Velar";
+},{passive:false});
 
-  } else if (driving) {
+joystick.addEventListener("touchend",e=>{
 
-    driving = false;
+  e.preventDefault();
 
-    playerX = carX - 80;
-    playerY = carY + 20;
+  joyActive=false;
 
-    status.textContent = "Walking around Abuja";
+  joystickEnd();
 
-  } else {
+},{passive:false});
 
-    status.textContent = "Move closer to the Range Rover";
+/* ACTION */
+
+document.getElementById("action").addEventListener("touchstart",e=>{
+
+  e.preventDefault();
+
+  const dx=player.x-car.x;
+  const dy=player.y-car.y;
+
+  const distance=Math.sqrt(dx*dx+dy*dy);
+
+  if(!driving && distance<180){
+
+    driving=true;
+
+    document.getElementById("status").textContent=
+      "Driving Range Rover";
+
+  }else if(driving){
+
+    driving=false;
+
+    player.x=car.x-130;
+    player.y=car.y;
+
+    document.getElementById("status").textContent=
+      "Walking around Abuja";
+
+  }else{
+
+    document.getElementById("status").textContent=
+      "Move closer to the Range Rover";
 
   }
 
-}, {passive:false});
+},{passive:false});
 
-document.getElementById("phone").addEventListener("touchstart", function(e) {
+/* PHONE */
+
+document.getElementById("phone").addEventListener("touchstart",e=>{
 
   e.preventDefault();
 
-  status.textContent = "Phone coming soon...";
+  document.getElementById("status").textContent=
+    "Phone coming soon";
 
-});
+},{passive:false});
 
-updatePlayer();
-updateCar();
-gameLoop();
+/* GAME LOOP */
+
+function update(){
+
+  if(driving){
+
+    car.x+=joyX*12;
+    car.y+=joyY*12;
+
+    car.angle=Math.atan2(joyY,joyX);
+
+  }else{
+
+    player.x+=joyX*4;
+    player.y+=joyY*4;
+
+    if(Math.abs(joyX)+Math.abs(joyY)>0){
+      player.angle=Math.atan2(joyY,joyX);
+    }
+  }
+
+  player.x=Math.max(80,Math.min(world.width-80,player.x));
+  player.y=Math.max(80,Math.min(world.height-80,player.y));
+
+  car.x=Math.max(80,Math.min(world.width-80,car.x));
+  car.y=Math.max(80,Math.min(world.height-80,car.y));
+
+  drawWorld();
+
+  requestAnimationFrame(update);
+}
+
+update();
 </script>
 
 </body>
