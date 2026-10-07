@@ -79,8 +79,44 @@ canvas{display:block;width:100%;height:100%}
 
 #controls{
   position:fixed;
-  left:20px;bottom:25px;
+  left:24px;bottom:24px;
   z-index:50;width:190px;height:150px
+}
+
+@media (orientation:landscape){
+  #controls{left:24px;bottom:24px}
+  #hint{bottom:18px;right:18px}
+  #getOut,#getIn,#interaction{left:auto;right:28px;transform:none;bottom:28px}
+  #exit{right:28px;bottom:28px}
+}
+
+@media (orientation:portrait){
+  #orientationNotice{
+    display:flex;
+  }
+}
+
+#orientationNotice{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:200;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:30px;
+  background:rgba(5,10,18,.96);
+  color:white;
+  font-size:22px;
+  font-weight:bold;
+}
+
+#orientationNotice small{
+  display:block;
+  margin-top:12px;
+  font-size:14px;
+  font-weight:normal;
+  opacity:.8;
 }
 
 .btn{
@@ -109,6 +145,13 @@ canvas{display:block;width:100%;height:100%}
 </head>
 
 <body>
+
+<div id="orientationNotice">
+  <div>
+    🔄 Rotate your phone<br>
+    <small>AbujaLifestyle is designed to play in landscape mode.</small>
+  </div>
+</div>
 
 <div id="online">STARTING...</div>
 <div id="title">ABUJA LIFESTYLE</div>
@@ -757,6 +800,16 @@ let walking=false;
    CONTROLS
 ===================================================== */
 
+function tryLandscape(){
+  try{
+    if(screen.orientation && screen.orientation.lock){
+      screen.orientation.lock("landscape").catch(()=>{});
+    }
+  }catch(err){}
+}
+
+window.addEventListener("touchstart",tryLandscape,{once:true,passive:true});
+
 const keys={
   w:false,
   s:false,
@@ -858,6 +911,8 @@ let lastY=0;
 canvas.addEventListener(
   "touchstart",
   e=>{
+    tryLandscape();
+
     if(e.touches.length!==1)return;
 
     touching=true;
