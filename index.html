@@ -694,7 +694,7 @@ interior.add(houseLight);
 
 
 /* =====================================================
-   BETTER PLAYER CHARACTER
+   PLAYER
 ===================================================== */
 
 const player=new THREE.Group();
@@ -702,9 +702,6 @@ const player=new THREE.Group();
 player.visible=false;
 
 scene.add(player);
-
-
-/* legs */
 
 const legMaterial=mat(0x20252b);
 const shoeMaterial=mat(0x111111);
@@ -726,106 +723,64 @@ function part(geometry,material,x,y,z){
   return p;
 }
 
-
-/* LEFT LEG */
+part(
+  new THREE.CapsuleGeometry(.16,.72,6,10),
+  legMaterial,-.22,.65,0
+);
 
 part(
   new THREE.CapsuleGeometry(.16,.72,6,10),
-  legMaterial,
-  -.22,.65,0
-);
-
-
-/* RIGHT LEG */
-
-part(
-  new THREE.CapsuleGeometry(.16,.72,6,10),
-  legMaterial,
-  .22,.65,0
-);
-
-
-/* SHOES */
-
-part(
-  new THREE.BoxGeometry(.38,.18,.65),
-  shoeMaterial,
-  -.22,.18,-.08
+  legMaterial,.22,.65,0
 );
 
 part(
   new THREE.BoxGeometry(.38,.18,.65),
-  shoeMaterial,
-  .22,.18,-.08
+  shoeMaterial,-.22,.18,-.08
 );
 
-
-/* TORSO */
+part(
+  new THREE.BoxGeometry(.38,.18,.65),
+  shoeMaterial,.22,.18,-.08
+);
 
 part(
   new THREE.CapsuleGeometry(.42,.72,8,12),
-  shirtMaterial,
-  0,1.45,0
+  shirtMaterial,0,1.45,0
 );
-
-
-/* NECK */
 
 part(
   new THREE.CylinderGeometry(.16,.17,.22,12),
-  skinMaterial,
-  0,2.05,0
+  skinMaterial,0,2.05,0
 );
 
-
-/* HEAD */
-
-const head=part(
+part(
   new THREE.SphereGeometry(.34,20,16),
-  skinMaterial,
-  0,2.42,0
+  skinMaterial,0,2.42,0
 );
-
-
-/* HAIR */
 
 part(
   new THREE.SphereGeometry(.355,20,12),
-  mat(0x17120f),
-  0,2.57,0
+  mat(0x17120f),0,2.57,0
 );
-
-
-/* LEFT ARM */
 
 part(
   new THREE.CapsuleGeometry(.13,.65,6,10),
-  shirtMaterial,
-  -.52,1.48,0
+  shirtMaterial,-.52,1.48,0
 );
-
-
-/* RIGHT ARM */
 
 part(
   new THREE.CapsuleGeometry(.13,.65,6,10),
-  shirtMaterial,
-  .52,1.48,0
-);
-
-
-/* HANDS */
-
-part(
-  new THREE.SphereGeometry(.15,12,8),
-  skinMaterial,
-  -.52,1.02,0
+  shirtMaterial,.52,1.48,0
 );
 
 part(
   new THREE.SphereGeometry(.15,12,8),
-  skinMaterial,
-  .52,1.02,0
+  skinMaterial,-.52,1.02,0
+);
+
+part(
+  new THREE.SphereGeometry(.15,12,8),
+  skinMaterial,.52,1.02,0
 );
 
 
@@ -1084,6 +1039,9 @@ getInButton.onclick=function(){
 
   getInButton.style.display="none";
 
+  /* FIX: SHOW GET OUT AGAIN */
+  getOutButton.style.display="block";
+
   hint.textContent=
     "Drive around Abuja";
 };
@@ -1165,6 +1123,8 @@ exitButton.onclick=function(){
   label.style.display="none";
 
   getInButton.style.display="none";
+
+  /* SHOW GET OUT AFTER LEAVING HOUSE */
   getOutButton.style.display="block";
 
   hint.textContent=
@@ -1507,6 +1467,12 @@ function animate(){
 ===================================================== */
 
 online.textContent="CONNECTING...";
+
+/* FIX: PLAYER STARTS INSIDE CAR, SO SHOW GET OUT */
+getOutButton.style.display="block";
+getInButton.style.display="none";
+enterButton.style.display="none";
+exitButton.style.display="none";
 
 connect();
 
