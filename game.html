@@ -84,6 +84,32 @@ button{
   background:rgba(255,255,255,.72)
 }
 
+#phonePanel{
+  position:fixed;
+  right:20px;
+  top:85px;
+  width:240px;
+  max-width:calc(100vw - 40px);
+  padding:14px;
+  z-index:30;
+  display:none;
+  color:#fff;
+  background:rgba(10,10,15,.94);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  box-shadow:0 12px 35px rgba(0,0,0,.4)
+}
+#phonePanel.open{display:block}
+#phonePanel h3{margin:0 0 10px;font-size:18px}
+.phoneRow{display:flex;gap:8px}
+.phoneApp{
+  flex:1;
+  border-radius:12px;
+  height:52px;
+  background:rgba(255,255,255,.1);
+  color:#fff;
+  font-size:12px
+}
 #help{
   position:fixed;
   bottom:8px;
@@ -111,7 +137,15 @@ button{
 </div>
 
 <button id="phone">📱</button>
-<button id="action">ACTION</button>
+<div id="phonePanel">
+  <h3>📱 Abuja Phone</h3>
+  <div class="phoneRow">
+    <button class="phoneApp" id="jobsApp">💼 Jobs</button>
+    <button class="phoneApp" id="bankApp">💵 Money</button>
+    <button class="phoneApp" id="mapApp">🗺️ Map</button>
+  </div>
+</div>
+<button id="action">🚗 ACTION</button>
 
 <div id="joystick">
   <div id="stick"></div>
@@ -1042,19 +1076,30 @@ carLoader.load(
 
 function updateCar(){
   if(!driving) return;
-  const accelerating=Math.abs(moveY)>.08;
-  if(accelerating){
-    carSpeed += (-moveY)*0.018;
-  } else {
-    carSpeed *= 0.94;
+
+  const throttle=-moveY;
+  const hasThrottle=Math.abs(throttle)>.05;
+
+  if(hasThrottle){
+    carSpeed += throttle * 0.028;
+  }else{
+    carSpeed *= 0.965;
   }
-  carSpeed=Math.max(-0.65,Math.min(0.95,carSpeed));
-  const steer=moveX;
-  carSteer += (steer-carSteer)*0.2;
-  if(Math.abs(carSpeed)>.015){
-    car.rotation.y -= carSteer*0.035*(Math.abs(carSpeed)+0.2)*Math.sign(carSpeed);
+
+  // Reverse is deliberately slower than forward.
+  carSpeed=Math.max(-0.48,Math.min(1.15,carSpeed));
+
+  const steering=Math.max(-1,Math.min(1,moveX));
+  carSteer += (steering-carSteer)*0.16;
+
+  if(Math.abs(carSpeed)>0.008){
+    const turnGrip=0.028 + Math.min(Math.abs(carSpeed),1)*0.018;
+    car.rotation.y -= carSteer*turnGrip*Math.sign(carSpeed);
     car.translateZ(carSpeed);
   }
+
+  // Small automatic braking when the joystick is released.
+  if(!hasThrottle && Math.abs(carSpeed)<0.025) carSpeed=0;
 }
 
 /* CONTROLS */
@@ -1339,11 +1384,12 @@ car.position
 );
 
 player.position.x+=4;
+carSpeed=0;
 
 document
 .getElementById("status")
 .textContent=
-"Explore Abuja";
+"Explore Abuja • On foot";
 
 }
 
@@ -1367,13 +1413,12 @@ new THREE.Vector3();
 
 function updateMovement(){
 
-if(!player)return;
+if(!player || driving)return;
 
 if(
 Math.abs(moveX)<.01 &&
 Math.abs(moveY)<.01
 )return;
-
 
 forward.set(
 -Math.sin(cameraYaw),
@@ -1381,52 +1426,30 @@ forward.set(
 -Math.cos(cameraYaw)
 );
 
-
 right.set(
 Math.cos(cameraYaw),
 0,
 -Math.sin(cameraYaw)
 );
 
-
 direction
 .set(0,0,0)
-.addScaledVector(
-right,
-moveX
-)
-.addScaledVector(
-forward,
--moveY
-);
-
+.addScaledVector(right,moveX)
+.addScaledVector(forward,-moveY);
 
 if(direction.length()>0){
+  direction.normalize();
 
-direction.normalize();
+  // Smooth on-foot movement, tuned for mobile.
+  const speed=.15;
+  player.position.addScaledVector(direction,speed);
 
-
-const speed =
-driving ? .42 : .16;
-
-
-const target =
-driving ? car : player;
-
-
-target.position
-.addScaledVector(
-direction,
-speed
-);
-
-
-target.rotation.y =
-Math.atan2(
-direction.x,
-direction.z
-);
-
+  const targetRotation=Math.atan2(direction.x,direction.z);
+  player.rotation.y +=
+    Math.atan2(
+      Math.sin(targetRotation-player.rotation.y),
+      Math.cos(targetRotation-player.rotation.y)
+    )*.22;
 }
 
 }
@@ -1456,7 +1479,7 @@ target.position.z
 );
 
 
-const distance=12;
+const distance=driving ? 15 : 12;
 
 const horizontal =
 Math.cos(cameraPitch)*
@@ -1495,19 +1518,27 @@ cameraTarget
 
 /* PHONE */
 
-document
-.getElementById("phone")
-.addEventListener(
-"click",
-()=>{
+const phonePanel=document.getElementById("phonePanel");
 
-document
-.getElementById("status")
-.textContent=
-"Phone coming soon 📱";
+document.getElementById("phone").addEventListener("click",()=>{
+  phonePanel.classList.toggle("open");
+  document.getElementById("status").textContent=
+    phonePanel.classList.contains("open")
+      ? "Phone opened 📱"
+      : (driving ? "Driving • Explore Abuja" : "Explore Abuja");
+});
 
-}
-);
+document.getElementById("jobsApp").addEventListener("click",()=>{
+  document.getElementById("status").textContent="Jobs • Coming next 💼";
+});
+
+document.getElementById("bankApp").addEventListener("click",()=>{
+  document.getElementById("status").textContent="Money • Balance $500 💵";
+});
+
+document.getElementById("mapApp").addEventListener("click",()=>{
+  document.getElementById("status").textContent="Map • Abuja district 🗺️";
+});
 
 
 /* RESIZE */
@@ -1591,6 +1622,7 @@ animate
 );
 
 updateMovement();
+updateCar();
 
 updateCamera();
 updateRemotePlayers();
