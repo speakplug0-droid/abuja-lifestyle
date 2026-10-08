@@ -1221,7 +1221,116 @@ function updateCar(){
       : "Explore Abuja";
 }
 
-/* CONTROLS */
+
+/* ABUJA CITY LIFE — NPC pedestrians + traffic */
+const cityNPCs=[];
+const trafficCars=[];
+
+function makeNPC(x,z,shirt){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(
+    new THREE.CapsuleGeometry(.34,.9,5,8),
+    new THREE.MeshStandardMaterial({color:shirt})
+  );
+  body.position.y=.78;
+  body.castShadow=true;
+  g.add(body);
+
+  const head=new THREE.Mesh(
+    new THREE.SphereGeometry(.27,12,10),
+    new THREE.MeshStandardMaterial({color:0x8d5524})
+  );
+  head.position.y=1.55;
+  head.castShadow=true;
+  g.add(head);
+
+  g.position.set(x,0,z);
+  scene.add(g);
+  cityNPCs.push({
+    mesh:g,
+    baseX:x,
+    baseZ:z,
+    phase:Math.random()*Math.PI*2,
+    direction:Math.random()>.5?1:-1
+  });
+}
+
+[
+  [-13,18,0x1976d2],[13,35,0xf39c12],
+  [-14,-30,0x9b59b6],[14,-52,0x16a085],
+  [-22,8,0xe74c3c],[22,-18,0x2ecc71]
+].forEach(p=>makeNPC(...p));
+
+function makeTrafficCar(x,z,axis,dir){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(
+    new THREE.BoxGeometry(1.65,.55,3.15),
+    new THREE.MeshStandardMaterial({
+      color:[0x8b0000,0xeeeeee,0x123c69,0xd4af37][trafficCars.length%4],
+      metalness:.35,
+      roughness:.35
+    })
+  );
+  body.position.y=.62;
+  body.castShadow=true;
+  g.add(body);
+
+  const cabin=new THREE.Mesh(
+    new THREE.BoxGeometry(1.38,.48,1.45),
+    new THREE.MeshStandardMaterial({color:0x172b38,metalness:.15,roughness:.2})
+  );
+  cabin.position.set(0,1.0,.15);
+  cabin.castShadow=true;
+  g.add(cabin);
+
+  for(const wx of [-.86,.86]){
+    for(const wz of [-.98,.98]){
+      const w=new THREE.Mesh(
+        new THREE.CylinderGeometry(.25,.25,.18,12),
+        new THREE.MeshStandardMaterial({color:0x090909,roughness:.7})
+      );
+      w.rotation.z=Math.PI/2;
+      w.position.set(wx,.45,wz);
+      g.add(w);
+    }
+  }
+
+  g.position.set(x,0,z);
+  scene.add(g);
+  trafficCars.push({mesh:g,axis,dir});
+}
+
+[
+  [-6,-110,"z",1],
+  [6,110,"z",-1],
+  [-110,-6,"x",-1],
+  [110,6,"x",1]
+].forEach(p=>makeTrafficCar(...p));
+
+function updateCityLife(){
+  const t=performance.now()*.001;
+
+  for(const npc of cityNPCs){
+    const sway=Math.sin(t*.7+npc.phase)*1.8*npc.direction;
+    npc.mesh.position.x=npc.baseX+sway;
+    npc.mesh.position.z=npc.baseZ+Math.sin(t*.5+npc.phase)*.8;
+    npc.mesh.rotation.y=Math.sin(t*.7+npc.phase)*.35;
+  }
+
+  for(const traffic of trafficCars){
+    const speed=.055*traffic.dir;
+    if(traffic.axis==="z"){
+      traffic.mesh.position.z+=speed;
+      if(traffic.mesh.position.z>125) traffic.mesh.position.z=-125;
+      if(traffic.mesh.position.z<-125) traffic.mesh.position.z=125;
+    }else{
+      traffic.mesh.position.x+=speed;
+      if(traffic.mesh.position.x>125) traffic.mesh.position.x=-125;
+      if(traffic.mesh.position.x<-125) traffic.mesh.position.x=125;
+    }
+  }
+}
+\n\n/* CONTROLS */
 
 let moveX=0;
 let moveY=0;
