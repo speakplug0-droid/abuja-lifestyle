@@ -1043,36 +1043,99 @@ document
 );
 
 
-/* RANGE ROVER — REAL 3D SUV */
+/* ABUJA SUV — custom mobile-friendly 3D SUV */
 const car = new THREE.Group();
 car.position.set(8,0,18);
 scene.add(car);
-let carModel = null;
+
 let carSpeed = 0;
 let carSteer = 0;
-const carLoader = new GLTFLoader();
-carLoader.load(
-  "https://cdn.3dassets.dev/assets/32519/v1/model.glb",
-  (gltf)=>{
-    carModel=gltf.scene;
-    const box=new THREE.Box3().setFromObject(carModel);
-    const size=box.getSize(new THREE.Vector3());
-    if(size.z>0) carModel.scale.setScalar(5.0/size.z);
-    const scaled=new THREE.Box3().setFromObject(carModel);
-    const center=scaled.getCenter(new THREE.Vector3());
-    carModel.position.x-=center.x;
-    carModel.position.z-=center.z;
-    const floor=new THREE.Box3().setFromObject(carModel);
-    carModel.position.y-=floor.min.y;
-    carModel.traverse(o=>{
-      if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}
-    });
-    car.add(carModel);
-    document.getElementById("status").textContent="Explore Abuja • SUV ready";
-  },
-  undefined,
-  ()=>document.getElementById("status").textContent="Explore Abuja • SUV unavailable"
-);
+
+const carBodyMat = new THREE.MeshStandardMaterial({
+  color:0x1f2428, metalness:.72, roughness:.28
+});
+const carTrimMat = new THREE.MeshStandardMaterial({
+  color:0x0b0d0f, metalness:.35, roughness:.32
+});
+const glassMat = new THREE.MeshStandardMaterial({
+  color:0x172b38, metalness:.25, roughness:.12, transparent:true, opacity:.88
+});
+const lightMat = new THREE.MeshStandardMaterial({
+  color:0xffffff, emissive:0xffffff, emissiveIntensity:1.5
+});
+const tailMat = new THREE.MeshStandardMaterial({
+  color:0x550000, emissive:0xff1111, emissiveIntensity:.8
+});
+
+function addCarMesh(geo,mat,pos){
+  const m=new THREE.Mesh(geo,mat);
+  m.position.set(...pos);
+  m.castShadow=true;
+  m.receiveShadow=true;
+  car.add(m);
+  return m;
+}
+
+/* Main SUV body */
+addCarMesh(new THREE.BoxGeometry(3.0,.85,5.25),carBodyMat,[0,.78,0]);
+addCarMesh(new THREE.BoxGeometry(2.82,.38,4.15),carTrimMat,[0,1.18,-.18]);
+
+/* Raised cabin + bonnet */
+addCarMesh(new THREE.BoxGeometry(2.72,1.05,2.75),carBodyMat,[0,1.62,.48]);
+addCarMesh(new THREE.BoxGeometry(2.72,.38,1.45),carBodyMat,[0,1.30,-1.55]);
+
+/* Windows */
+addCarMesh(new THREE.BoxGeometry(2.48,.70,.08),glassMat,[0,1.72,-.92]);
+addCarMesh(new THREE.BoxGeometry(2.48,.70,.08),glassMat,[0,1.72,1.82]);
+addCarMesh(new THREE.BoxGeometry(.08,.70,2.55),glassMat,[-1.365,1.72,.45]);
+addCarMesh(new THREE.BoxGeometry(.08,.70,2.55),glassMat,[1.365,1.72,.45]);
+
+/* Front/rear bumpers */
+addCarMesh(new THREE.BoxGeometry(3.08,.28,.25),carTrimMat,[0,.55,-2.67]);
+addCarMesh(new THREE.BoxGeometry(3.08,.28,.25),carTrimMat,[0,.55,2.67]);
+
+/* Headlights + tail lights */
+addCarMesh(new THREE.BoxGeometry(.58,.22,.10),lightMat,[-.88,1.02,-2.66]);
+addCarMesh(new THREE.BoxGeometry(.58,.22,.10),lightMat,[.88,1.02,-2.66]);
+addCarMesh(new THREE.BoxGeometry(.62,.24,.10),tailMat,[-.92,1.02,2.66]);
+addCarMesh(new THREE.BoxGeometry(.62,.24,.10),tailMat,[.92,1.02,2.66]);
+
+/* Mirrors */
+addCarMesh(new THREE.BoxGeometry(.22,.22,.42),carTrimMat,[-1.55,1.48,-.75]);
+addCarMesh(new THREE.BoxGeometry(.22,.22,.42),carTrimMat,[1.55,1.48,-.75]);
+
+/* Roof rails */
+addCarMesh(new THREE.BoxGeometry(.10,.10,3.25),carTrimMat,[-1.05,2.20,.45]);
+addCarMesh(new THREE.BoxGeometry(.10,.10,3.25),carTrimMat,[1.05,2.20,.45]);
+
+/* Wheels */
+const wheels=[];
+for(const x of [-1.52,1.52]){
+  for(const z of [-1.72,1.72]){
+    const wheel=new THREE.Mesh(
+      new THREE.CylinderGeometry(.48,.48,.34,18),
+      new THREE.MeshStandardMaterial({color:0x090909,metalness:.15,roughness:.65})
+    );
+    wheel.rotation.z=Math.PI/2;
+    wheel.position.set(x,.52,z);
+    wheel.castShadow=true;
+    car.add(wheel);
+    wheels.push(wheel);
+  }
+}
+
+/* Wheel hubs */
+for(const x of [-1.71,1.71]){
+  for(const z of [-1.72,1.72]){
+    const hub=new THREE.Mesh(
+      new THREE.CylinderGeometry(.18,.18,.05,16),
+      new THREE.MeshStandardMaterial({color:0xbfc4c8,metalness:.8,roughness:.25})
+    );
+    hub.rotation.z=Math.PI/2;
+    hub.position.set(x,.52,z);
+    car.add(hub);
+  }
+}
 
 // ROAD COLLISION
 // The city has four main road corridors. Keep the SUV on paved road
@@ -1095,15 +1158,14 @@ const carNextPosition = new THREE.Vector3();
 
 function tryMoveCar(distance){
   carNextPosition.copy(car.position);
-  carNextPosition.x += Math.sin(car.rotation.y) * distance;
-  carNextPosition.z += Math.cos(car.rotation.y) * distance;
 
-  // Test the vehicle centre plus four small safety points.
-  const margin=2.2;
+  // Rotation 0 means the SUV faces toward -Z.
+  carNextPosition.x -= Math.sin(car.rotation.y) * distance;
+  carNextPosition.z -= Math.cos(car.rotation.y) * distance;
+
+  const margin=2.0;
   const points=[
-    [0,0],
-    [margin,0],[-margin,0],
-    [0,margin],[0,-margin]
+    [0,0],[margin,0],[-margin,0],[0,margin],[0,-margin]
   ];
 
   for(const [px,pz] of points){
@@ -1123,43 +1185,40 @@ function updateCar(){
   const throttle=-moveY;
   const hasThrottle=Math.abs(throttle)>.045;
 
-  // Smooth acceleration / braking.
   if(hasThrottle){
-    const acceleration=throttle>=0 ? 0.032 : 0.045;
+    const acceleration=throttle>=0 ? 0.038 : 0.050;
     carSpeed += throttle*acceleration;
   }else{
     carSpeed *= 0.955;
   }
 
-  // Cap reverse and forward speed.
-  carSpeed=Math.max(-0.50,Math.min(1.20,carSpeed));
+  carSpeed=Math.max(-0.55,Math.min(1.35,carSpeed));
 
-  // Mobile steering: the joystick X axis controls a smooth steering angle.
   const steering=Math.max(-1,Math.min(1,moveX));
-  carSteer += (steering-carSteer)*0.20;
+  carSteer += (steering-carSteer)*0.22;
 
   if(Math.abs(carSpeed)>0.006){
-    const speedRatio=Math.min(Math.abs(carSpeed)/1.20,1);
-    const steeringStrength=(0.018 + speedRatio*0.042);
+    const speedRatio=Math.min(Math.abs(carSpeed)/1.35,1);
+    const steeringStrength=.014 + speedRatio*.052;
 
-    // Steering is strongest at speed and softer when reversing.
-    car.rotation.y -=
+    car.rotation.y +=
       carSteer*steeringStrength*(carSpeed>=0 ? 1 : -0.72);
 
-    // Move in the direction the SUV is facing, but never through grass.
-    if(!tryMoveCar(carSpeed)){
-      carSpeed=0;
-    }
+    // Front wheels visibly follow the steering input.
+    wheels[0].rotation.y=carSteer*.55;
+    wheels[1].rotation.y=carSteer*.55;
+
+    if(!tryMoveCar(carSpeed)) carSpeed=0;
   }
 
-  // Let the steering naturally return to centre.
-  if(Math.abs(steering)<0.04){
-    carSteer *= 0.88;
-  }
+  if(Math.abs(steering)<.04) carSteer *= .88;
 
-  if(!hasThrottle && Math.abs(carSpeed)<0.018){
-    carSpeed=0;
-  }
+  if(!hasThrottle && Math.abs(carSpeed)<.018) carSpeed=0;
+
+  document.getElementById("status").textContent =
+    driving
+      ? `Driving • SUV • ${Math.round(Math.abs(carSpeed)*82)} km/h`
+      : "Explore Abuja";
 }
 
 /* CONTROLS */
