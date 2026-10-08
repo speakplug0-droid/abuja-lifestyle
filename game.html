@@ -1074,6 +1074,49 @@ carLoader.load(
   ()=>document.getElementById("status").textContent="Explore Abuja • SUV unavailable"
 );
 
+// ROAD COLLISION
+// The city has four main road corridors. Keep the SUV on paved road
+// instead of letting it drive across the grass.
+function isOnRoad(x,z){
+  const mainVertical = Math.abs(x) <= 10.6 && Math.abs(z) <= 300;
+  const mainHorizontal = Math.abs(z) <= 10.6 && Math.abs(x) <= 300;
+
+  const eastVertical = Math.abs(x-70) <= 6.7 && Math.abs(z) <= 150;
+  const westVertical = Math.abs(x+70) <= 6.7 && Math.abs(z) <= 150;
+  const northHorizontal = Math.abs(z-70) <= 6.7 && Math.abs(x) <= 150;
+  const southHorizontal = Math.abs(z+70) <= 6.7 && Math.abs(x) <= 150;
+
+  return mainVertical || mainHorizontal ||
+         eastVertical || westVertical ||
+         northHorizontal || southHorizontal;
+}
+
+const carNextPosition = new THREE.Vector3();
+
+function tryMoveCar(distance){
+  carNextPosition.copy(car.position);
+  carNextPosition.x += Math.sin(car.rotation.y) * distance;
+  carNextPosition.z += Math.cos(car.rotation.y) * distance;
+
+  // Test the vehicle centre plus four small safety points.
+  const margin=2.2;
+  const points=[
+    [0,0],
+    [margin,0],[-margin,0],
+    [0,margin],[0,-margin]
+  ];
+
+  for(const [px,pz] of points){
+    if(!isOnRoad(carNextPosition.x+px,carNextPosition.z+pz)){
+      carSpeed *= 0.55;
+      return false;
+    }
+  }
+
+  car.position.copy(carNextPosition);
+  return true;
+}
+
 function updateCar(){
   if(!driving) return;
 
@@ -1103,8 +1146,10 @@ function updateCar(){
     car.rotation.y -=
       carSteer*steeringStrength*(carSpeed>=0 ? 1 : -0.72);
 
-    // Move in the direction the SUV is facing.
-    car.translateZ(carSpeed);
+    // Move in the direction the SUV is facing, but never through grass.
+    if(!tryMoveCar(carSpeed)){
+      carSpeed=0;
+    }
   }
 
   // Let the steering naturally return to centre.
