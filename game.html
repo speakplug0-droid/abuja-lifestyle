@@ -1009,111 +1009,53 @@ document
 );
 
 
-/* RANGE ROVER */
-
-const car =
-new THREE.Group();
-
-
-const carBody =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-4.2,
-1.3,
-7
-),
-new THREE.MeshStandardMaterial({
-color:0x111111,
-metalness:.7,
-roughness:.25
-})
-);
-
-carBody.position.y=1.1;
-
-carBody.castShadow=true;
-
-car.add(carBody);
-
-
-const roof =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-3.8,
-1,
-4
-),
-new THREE.MeshStandardMaterial({
-color:0x151515,
-metalness:.6
-})
-);
-
-roof.position.y=2.1;
-
-car.add(roof);
-
-
-const glass =
-new THREE.Mesh(
-new THREE.BoxGeometry(
-3.5,
-.7,
-3.8
-),
-new THREE.MeshStandardMaterial({
-color:0x183b52,
-transparent:true,
-opacity:.75
-})
-);
-
-glass.position.y=2.05;
-
-car.add(glass);
-
-
-function wheel(x,z){
-
-const w =
-new THREE.Mesh(
-new THREE.CylinderGeometry(
-.65,
-.65,
-.5,
-16
-),
-new THREE.MeshStandardMaterial({
-color:0x111111
-})
-);
-
-w.rotation.z=Math.PI/2;
-
-w.position.set(
-x,
-.65,
-z
-);
-
-car.add(w);
-
-}
-
-wheel(-2.1,-2.3);
-wheel(2.1,-2.3);
-wheel(-2.1,2.3);
-wheel(2.1,2.3);
-
-
-car.position.set(
-8,
-0,
-18
-);
-
+/* RANGE ROVER — REAL 3D SUV */
+const car = new THREE.Group();
+car.position.set(8,0,18);
 scene.add(car);
+let carModel = null;
+let carSpeed = 0;
+let carSteer = 0;
+const carLoader = new GLTFLoader();
+carLoader.load(
+  "https://cdn.3dassets.dev/assets/32519/v1/model.glb",
+  (gltf)=>{
+    carModel=gltf.scene;
+    const box=new THREE.Box3().setFromObject(carModel);
+    const size=box.getSize(new THREE.Vector3());
+    if(size.z>0) carModel.scale.setScalar(5.0/size.z);
+    const scaled=new THREE.Box3().setFromObject(carModel);
+    const center=scaled.getCenter(new THREE.Vector3());
+    carModel.position.x-=center.x;
+    carModel.position.z-=center.z;
+    const floor=new THREE.Box3().setFromObject(carModel);
+    carModel.position.y-=floor.min.y;
+    carModel.traverse(o=>{
+      if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}
+    });
+    car.add(carModel);
+    document.getElementById("status").textContent="Explore Abuja • SUV ready";
+  },
+  undefined,
+  ()=>document.getElementById("status").textContent="Explore Abuja • SUV unavailable"
+);
 
+function updateCar(){
+  if(!driving) return;
+  const accelerating=Math.abs(moveY)>.08;
+  if(accelerating){
+    carSpeed += (-moveY)*0.018;
+  } else {
+    carSpeed *= 0.94;
+  }
+  carSpeed=Math.max(-0.65,Math.min(0.95,carSpeed));
+  const steer=moveX;
+  carSteer += (steer-carSteer)*0.2;
+  if(Math.abs(carSpeed)>.015){
+    car.rotation.y -= carSteer*0.035*(Math.abs(carSpeed)+0.2)*Math.sign(carSpeed);
+    car.translateZ(carSpeed);
+  }
+}
 
 /* CONTROLS */
 
