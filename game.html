@@ -927,7 +927,7 @@ new GLTFLoader();
 
 loader.load(
 
-"https://cdn.3dassets.dev/assets/32486/v1/model.glb",
+"/Superhero_Male_FullBody.gltf",
 
 (gltf)=>{
 
@@ -1588,6 +1588,58 @@ innerHeight
 );
 
 
+/* MULTIPLAYER */
+const remotePlayers = new Map();
+let socket = null;
+let myPlayerId = null;
+function createRemotePlayer(){
+  const g=new THREE.Group();
+  const body=new THREE.Mesh(new THREE.CapsuleGeometry(.42,1.15,6,10),new THREE.MeshStandardMaterial({color:0x1976d2}));
+  body.position.y=1; body.castShadow=true; g.add(body);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.32,12,12),new THREE.MeshStandardMaterial({color:0x8d5524}));
+  head.position.y=1.85; head.castShadow=true; g.add(head);
+  scene.add(g); return g;
+}
+function connectMultiplayer(){
+  const protocol=location.protocol==="https:"?"wss:":"ws:";
+  socket=new WebSocket(protocol+"//"+location.host);
+  socket.addEventListener("open",()=>document.getElementById("status").textContent="Online • Abuja multiplayer");
+  socket.addEventListener("message",(event)=>{
+    try{const data=JSON.parse(event.data);
+      if(data.type==="welcome"){myPlayerId=data.id;return;}
+      if(data.type==="players"){
+        const seen=new Set();
+        for(const [id,p] of Object.entries(data.players)){
+          if(id===myPlayerId)continue; seen.add(id);
+          let remote=remotePlayers.get(id);
+          if(!remote){remote=createRemotePlayer();remote.position.set(p.x,p.y,p.z);remote.rotation.y=p.rotation||0;remotePlayers.set(id,remote);}
+          remote.userData.targetX=p.x; remote.userData.targetY=p.y; remote.userData.targetZ=p.z; remote.userData.targetRotation=p.rotation||0;
+        }
+        for(const [id,remote] of remotePlayers){if(!seen.has(id)){scene.remove(remote);remotePlayers.delete(id);}}
+      }
+    }catch(error){console.error("Multiplayer message error",error);}
+  });
+  socket.addEventListener("close",()=>{document.getElementById("status").textContent="Offline • Reconnecting...";setTimeout(connectMultiplayer,2000);});
+  socket.addEventListener("error",()=>document.getElementById("status").textContent="Connection problem");
+}
+function sendPlayerState(){
+  if(!socket||socket.readyState!==WebSocket.OPEN)return;
+  const target=driving?car:player;if(!target)return;
+  socket.send(JSON.stringify({type:"position",x:target.position.x,y:target.position.y,z:target.position.z,rotation:target.rotation.y}));
+}
+function updateRemotePlayers(){
+  for(const remote of remotePlayers.values()){
+    if(remote.userData.targetX===undefined)continue;
+    remote.position.x+=(remote.userData.targetX-remote.position.x)*.18;
+    remote.position.y+=(remote.userData.targetY-remote.position.y)*.18;
+    remote.position.z+=(remote.userData.targetZ-remote.position.z)*.18;
+    const r=remote.userData.targetRotation||0;
+    remote.rotation.y+=Math.atan2(Math.sin(r-remote.rotation.y),Math.cos(r-remote.rotation.y))*.18;
+  }
+}
+connectMultiplayer();
+setInterval(sendPlayerState,100);
+
 /* GAME LOOP */
 
 function animate(){
@@ -1599,6 +1651,7 @@ animate
 updateMovement();
 
 updateCamera();
+updateRemotePlayers();
 
 
 if(mixer){
