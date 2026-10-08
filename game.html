@@ -1078,28 +1078,43 @@ function updateCar(){
   if(!driving) return;
 
   const throttle=-moveY;
-  const hasThrottle=Math.abs(throttle)>.05;
+  const hasThrottle=Math.abs(throttle)>.045;
 
+  // Smooth acceleration / braking.
   if(hasThrottle){
-    carSpeed += throttle * 0.028;
+    const acceleration=throttle>=0 ? 0.032 : 0.045;
+    carSpeed += throttle*acceleration;
   }else{
-    carSpeed *= 0.965;
+    carSpeed *= 0.955;
   }
 
-  // Reverse is deliberately slower than forward.
-  carSpeed=Math.max(-0.48,Math.min(1.15,carSpeed));
+  // Cap reverse and forward speed.
+  carSpeed=Math.max(-0.50,Math.min(1.20,carSpeed));
 
+  // Mobile steering: the joystick X axis controls a smooth steering angle.
   const steering=Math.max(-1,Math.min(1,moveX));
-  carSteer += (steering-carSteer)*0.16;
+  carSteer += (steering-carSteer)*0.20;
 
-  if(Math.abs(carSpeed)>0.008){
-    const turnGrip=0.028 + Math.min(Math.abs(carSpeed),1)*0.018;
-    car.rotation.y -= carSteer*turnGrip*Math.sign(carSpeed);
+  if(Math.abs(carSpeed)>0.006){
+    const speedRatio=Math.min(Math.abs(carSpeed)/1.20,1);
+    const steeringStrength=(0.018 + speedRatio*0.042);
+
+    // Steering is strongest at speed and softer when reversing.
+    car.rotation.y -=
+      carSteer*steeringStrength*(carSpeed>=0 ? 1 : -0.72);
+
+    // Move in the direction the SUV is facing.
     car.translateZ(carSpeed);
   }
 
-  // Small automatic braking when the joystick is released.
-  if(!hasThrottle && Math.abs(carSpeed)<0.025) carSpeed=0;
+  // Let the steering naturally return to centre.
+  if(Math.abs(steering)<0.04){
+    carSteer *= 0.88;
+  }
+
+  if(!hasThrottle && Math.abs(carSpeed)<0.018){
+    carSpeed=0;
+  }
 }
 
 /* CONTROLS */
